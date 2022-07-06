@@ -2,6 +2,8 @@
 
 nextflow.enable.dsl = 2
 
+include { metawrap_qc } from './modules/metawrap_qc.nf'
+
 def validate_parameters() {
     // Parameter checking function
     def errors = 0
@@ -45,33 +47,46 @@ process binning {
     file(assembly_file)
 
     output:
-    path($workdir)
-    tuple val(sample_id), file(first_read), file(second_read)
+    path($workdir), emit: binning_dir_ch
+    tuple val(sample_id), file(first_read), file(second_read), emit: fastq_path_ch
 
     script:
     workdir="workdir.txt"
     """
-    pwd > workdir.txt
     metawrap binning -a $assembly_file -o binning $first_read $second_read
+    pwd > workdir.txt
     """
 }
 
 process bin_refinement {
     input:
     file(binning_dir)
+
+    output:
+    path($workdir), emit: bin_refinement_ch
+
     script:
+    workdir="workdir.txt"
     """
     binning_work_dir=\$(cat $binning_dir)
     metawrap bin_refinement -o bin_refinement_outdir -A \$binning_work_dir/metabat2_bins/ -B \$binning_work_dir/maxbin2_bins/ -C \$binning_work_dir/concoct_bins/
+    pwd > workdir.txt
     """
 }
 
 process reassemble_bins {
+    publishDir "${params.results_dir}", mode: 'copy', overwrite: true
     input:
+    file(bin_refinement_dir)
+    tuple val(sample_id), file(first_read), file(second_read)
+
+    output:
+    path("${sample_id}_reassemble_bins_outdir/*")
 
     script:
     """
-    metawrap reassemble_bins -b bin_refinement_outdir/metawrap_50_5_bins/ -o reassemble_bins_outdir -1 44989_1#81_sub_clean_1.fastq.gz -2 44989_1#81_sub_clean_2.fastq.gz
+    bin_refinement_workdir=\$(cat $bin_refinement_dir)
+    metawrap reassemble_bins -b \$bin_refinement_workdir/metawrap_50_5_bins/ -o $sample_id"_reassemble_bins_outdir" -1 $first_read -2 $second_read
     """
 }
 
@@ -82,4 +97,5 @@ workflow {
             .map{ row -> tuple(row.sample_id, file(row.first_read), file(row.second_read)) }
     assembly(fastq_path_ch)
     binning(assembly.out.fastq_path_ch, assembly.out.assembly_ch)
+    bin_refinement(binning.out.binning_dir_ch)
 }

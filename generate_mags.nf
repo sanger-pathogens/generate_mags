@@ -98,4 +98,5 @@ workflow {
     assembly(fastq_path_ch)
     binning(assembly.out.fastq_path_ch, assembly.out.assembly_ch)
     bin_refinement(binning.out.binning_dir_ch)
+    reassemble_bins(bin_refinement.out.bin_refinement_ch, binning.out.fastq_path_ch)
 }

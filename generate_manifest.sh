@@ -11,7 +11,7 @@ do
     then
       lane_id=$(echo $line | awk -F "/" '{ print $NF }' | sed 's|_[12].fastq.gz||g')
       read2=$(echo $line)
-      read1=$(cat $fastq_paths | grep $lane_id | grep -v $read2)
+      read1=$(cat $fastq_paths | grep ${lane_id}_ | grep -v ${read2})
       echo $lane_id,$read1,$read2 >> manifest.csv
       count=0
     fi

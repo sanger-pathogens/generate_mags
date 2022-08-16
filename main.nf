@@ -46,13 +46,13 @@ process assembly {
     assembly_file="final_assembly.fasta"
     """
     cmd="conda run -n metawrap-env metawrap assembly -1 $first_read -2 $second_read -o ."
-    if $params.keep_assembly_files && $params.fastspades
+    if $params.keep_assembly && $params.fastspades
     then
         cmd="\${cmd} --fastspades --keepfiles"
     elif $params.fastspades
     then
         cmd="\${cmd} --fastspades"
-    elif $params.keep_assembly_files
+    elif $params.keep_assembly
     then
         cmd="\${cmd} --keepfiles"
     fi

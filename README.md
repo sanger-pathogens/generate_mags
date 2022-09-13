@@ -33,3 +33,17 @@ This pipeline relies on the following modules:
 ISG/singularity
 nextflow
 ```
+
+# Running
+## Source beforehand
+```
+module load nextflow ISG/singularity/3.10.0
+export NXF_SINGULARITY_CACHEDIR=<a fixed path on lustre that won't be removed (unlike the "work" directory)>
+export queue=long
+export mem=16GB
+# Not sure this actually works, but it's also set in the image
+export NXF_PYTHONNOUSERSITE=1
+```
+
+## Execution
+`bsub -G <team> -q $queue -o ./out/%J.out -e ./err/%J.err -R "select[mem>$mem] rusage[mem=$mem]" -M $mem -J "nf_generate_mags" "nextflow run . --manifest <manifest> -profile sanger_lsf -with-trace -resume"`

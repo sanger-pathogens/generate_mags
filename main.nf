@@ -45,7 +45,7 @@ process assembly {
     script:
     assembly_file="final_assembly.fasta"
     """
-    cmd="conda run -n metawrap-env metawrap assembly -1 $first_read -2 $second_read -o ."
+    cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
     if $params.keep_assembly && $params.fastspades
     then
         cmd="\${cmd} --fastspades --keepfiles"
@@ -75,7 +75,7 @@ process binning {
     workdir="binning_workdir.txt"
     assembly_file="final_assembly.fasta"
     """
-    conda run -n metawrap-env metawrap binning -a $assembly_file -o binning $first_read $second_read
+    metawrap binning -a $assembly_file -o binning $first_read $second_read
     pwd > binning_workdir.txt
     """
 }
@@ -95,15 +95,16 @@ process bin_refinement {
     """
     if $params.keep_allbins
     then
-        conda run -n metawrap-env metawrap bin_refinement --keep_allbins -o ${sample_id}_bin_refinement_outdir -A ${binning_dir}/metabat2_bins/ -B ${binning_dir}/maxbin2_bins/ -C ${binning_dir}/concoct_bins/
+        metawrap bin_refinement --keep_allbins -o ${sample_id}_bin_refinement_outdir -A ${binning_dir}/metabat2_bins/ -B ${binning_dir}/maxbin2_bins/ -C ${binning_dir}/concoct_bins/
         if $params.skip_reassembly
         then
             mkdir -p ${workflow.projectDir}/${params.results_dir}/${sample_id}_bin_refinement_allbins
             cp -r ${sample_id}_bin_refinement_outdir/* ${workflow.projectDir}/${params.results_dir}/${sample_id}_bin_refinement_allbins
         fi
     else
-        conda run -n metawrap-env metawrap bin_refinement -o ${sample_id}_bin_refinement_outdir -A ${binning_dir}/metabat2_bins/ -B ${binning_dir}/maxbin2_bins/ -C ${binning_dir}/concoct_bins/
+        metawrap bin_refinement -o ${sample_id}_bin_refinement_outdir -A ${binning_dir}/metabat2_bins/ -B ${binning_dir}/maxbin2_bins/ -C ${binning_dir}/concoct_bins/
     fi
+
     pwd > bin_refinement_workdir.txt
     if  $params.skip_reassembly
     then
@@ -136,7 +137,7 @@ process reassemble_bins {
     script:
     workdir="reassemble_bins_workdir.txt"
     """
-    conda run -n metawrap-env metawrap reassemble_bins -b ${bin_refinement_dir}/metawrap_50_5_bins/ -o ${sample_id}_reassemble_bins_outdir -1 $first_read -2 $second_read
+    metawrap reassemble_bins -b ${bin_refinement_dir}/metawrap_50_5_bins/ -o ${sample_id}_reassemble_bins_outdir -1 $first_read -2 $second_read
     pwd > reassemble_bins_workdir.txt
     shopt -s globstar
     for f in **/*.{fa,stats}

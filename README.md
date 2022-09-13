@@ -30,6 +30,6 @@ This will output the manifest to `manifest.csv` which can be fed into the nextfl
 ## Dependencies
 This pipeline relies on the following modules:
 ```
-ISG/singularity/3.6.4
-nextflow/22.04.0-5697
+ISG/singularity
+nextflow
 ```

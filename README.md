@@ -37,7 +37,7 @@ nextflow
 # Running
 ## Source beforehand
 ```
-module load nextflow ISG/singularity/3.10.0
+module load nextflow ISG/singularity/3.10.0  # there seem to be some issues with older versions of singularity
 export NXF_SINGULARITY_CACHEDIR=<a fixed path on lustre that won't be removed (unlike the "work" directory)>
 export queue=long
 export mem=16GB

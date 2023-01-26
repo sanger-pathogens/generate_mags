@@ -10,7 +10,7 @@ include { cleanup_assembly; cleanup_binning; cleanup_bin_refinement; cleanup_ref
 def printHelp() {
     log.info """
     Usage:
-        nextflow run main.nf
+        nextflow run .
 
     Options:
         --manifest                   Manifest containing paths to fastq files (mandatory)

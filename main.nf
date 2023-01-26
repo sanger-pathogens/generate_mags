@@ -104,7 +104,7 @@ process binning {
 
 process bin_refinement {
     if (params.keep_allbins) { publishDir path: "${params.results_dir}", mode: 'copy', pattern: "*_bin_refinement_outdir" }
-    if (params.skip_reassembly) { publishDir path: { "${params.results_dir}/${sample_id}_bin_refinement_outdir" }, mode: 'copy', pattern: '*.{fa,stats}' }
+    if (params.skip_reassembly && !params.keep_allbins) { publishDir path: { "${params.results_dir}/${sample_id}_bin_refinement_outdir" }, mode: 'copy', pattern: '*.{fa,stats}' }
     input:
     path(binning_dir)
     tuple val(sample_id), file(first_read), file(second_read)

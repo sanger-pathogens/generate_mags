@@ -57,14 +57,13 @@ fi
 
 echo "sample_id,first_read,second_read" > ${manifest_file}
 
-data_full=$(pf data -t file -i ${lanes_file} -f fastq 2>/dev/null)
+data_full=$(pf data -t file -i ${lanes_file} -f fastq | sort 2>/dev/null)
 
 while read lane
 do
-  # pf is annoying and prints the reads out in a random order :)
   read_1=$(echo ${data_full} | xargs -n1 echo | grep -w "${lane}_1.fastq.gz")
   read_2=$(echo ${data_full} | xargs -n1 echo | grep -w "${lane}_2.fastq.gz")
-  if [[ ! -z ${read_1} ]] && [[ ! -z ${read_2} ]]
+  if [[ ! -z ${read_1} ]] || [[ ! -z ${read_2} ]]
   then
       echo ${lane}","${read_1}","${read_2} >> ${manifest_file}
   else

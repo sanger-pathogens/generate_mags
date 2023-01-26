@@ -2,7 +2,7 @@
 
 ## Usage
 ```
-nextflow run generate_mags.nf
+nextflow run .
   --manifest                   Manifest containing paths to fastq files (mandatory)
   --skip_qc                    skip metawrap qc step - default false (optional)
   --keep_allbins               keep allbins option for bin refinement - default false (optional)

@@ -57,12 +57,12 @@ fi
 
 echo "sample_id,first_read,second_read" > ${manifest_file}
 
-data_full=$(pf data -t file -i ${lanes_file} -f fastq | sort 2>/dev/null)
+pf data -t file -i ${lanes_file} -f fastq | sort 2>/dev/null |  xargs -n1 echo > Temp_file_path.txt
 
 while read lane
 do
-  read_1=$(echo ${data_full} | xargs -n1 echo | grep -w "${lane}_1.fastq.gz")
-  read_2=$(echo ${data_full} | xargs -n1 echo | grep -w "${lane}_2.fastq.gz")
+  read_1=$(grep -w "${lane}_1.fastq.gz" Temp_file_path.txt)
+  read_2=$(grep -w "${lane}_2.fastq.gz" Temp_file_path.txt)
   if [[ ! -z ${read_1} ]] || [[ ! -z ${read_2} ]]
   then
       echo ${lane}","${read_1}","${read_2} >> ${manifest_file}
@@ -71,4 +71,7 @@ do
   fi
 done < ${lanes_file}
 
+rm Temp_file_path.txt
+
 echo "Written manifest file to ${manifest_file}"
+

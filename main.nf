@@ -1,10 +1,8 @@
 #!/usr/bin/env nextflow
 
-nextflow.enable.dsl = 2
-
-include { metawrap_qc } from './modules/metawrap_qc.nf'
-include { cleanup_assembly; cleanup_binning; cleanup_bin_refinement; cleanup_refinement_reassembly;
-          cleanup_trimmed_fastq_files } from './modules/cleanup.nf'
+include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
+include { CLEANUP_ASSEMBLY; CLEANUP_BINNING; CLEANUP_BIN_REFINEMENT; CLEANUP_REFINEMENT_REASSEMBLY;
+          CLEANUP_TRIMMED_FASTQ_FILES } from './modules/cleanup/cleanup.nf'
 
 // helper functions
 def printHelp() {
@@ -23,7 +21,6 @@ def printHelp() {
         --keep_metawrap_qc           don't cleanup metawrap qc files - default false (optional)
         --skip_reassembly            skip reassembly step - default false (optional)
         --fastspades                 use fastspades assembly option - default false (optional)
-        -profile                     always use sanger_lsf when running on the farm (mandatory)
         --help                       print this help message (optional)
     """.stripIndent()
 }
@@ -34,7 +31,7 @@ def validate_parameters () {
     }
 }
 
-process assembly {
+process ASSEMBLY {
     input:
     tuple val(sample_id), file(first_read), file(second_read)
 
@@ -67,7 +64,7 @@ process assembly {
     """
 }
 
-process binning {
+process BINNING {
     input:
     tuple val(sample_id), file(first_read), file(second_read)
     file(assembly_file)
@@ -102,7 +99,7 @@ process binning {
     """
 }
 
-process bin_refinement {
+process BIN_REFINEMENT {
     if (params.keep_allbins) { publishDir path: "${params.results_dir}", mode: 'copy', pattern: "*_bin_refinement_outdir" }
     if (params.skip_reassembly && !params.keep_allbins) { publishDir path: { "${params.results_dir}/${sample_id}_bin_refinement_outdir" }, mode: 'copy', pattern: '*.{fa,stats}' }
     input:
@@ -167,7 +164,7 @@ process bin_refinement {
     """
 }
 
-process reassemble_bins {
+process REASSEMBLE_BINS {
     publishDir "${params.results_dir}/${sample_id}_reassemble_bins_outdir", mode: 'copy', overwrite: true, pattern: '*.{fa,stats}'
     input:
     path(bin_refinement_dir)
@@ -220,39 +217,39 @@ workflow {
     fastq_path_ch = manifest_ch.splitCsv(header: true, sep: ',')
             .map{ row -> tuple(row.sample_id, file(row.first_read), file(row.second_read)) }
     if (params.skip_qc) {
-        assembly(fastq_path_ch)
+        ASSEMBLY(fastq_path_ch)
     }
     else {
-        metawrap_qc(fastq_path_ch)
-        assembly(metawrap_qc.out.trimmed_fastqs)
+        METAWRAP_QC(fastq_path_ch)
+        ASSEMBLY(METAWRAP_QC.out.filtered_reads)
     }
-    binning(assembly.out.fastq_path_ch, assembly.out.assembly_ch)
+    BINNING(ASSEMBLY.out.fastq_path_ch, ASSEMBLY.out.assembly_ch)
     if (params.skip_reassembly) {
-        bin_refinement(binning.out.binning_ch, binning.out.fastq_path_ch)
+        BIN_REFINEMENT(BINNING.out.binning_ch, BINNING.out.fastq_path_ch)
     }
     else {
-        bin_refinement(binning.out.binning_ch, binning.out.fastq_path_ch)
-        reassemble_bins(bin_refinement.out.bin_refinement_ch, bin_refinement.out.fastq_path_ch)
+        BIN_REFINEMENT(BINNING.out.binning_ch, BINNING.out.fastq_path_ch)
+        REASSEMBLE_BINS(BIN_REFINEMENT.out.bin_refinement_ch, BIN_REFINEMENT.out.fastq_path_ch)
     }
     // cleanup
     if (!params.keep_metawrap_qc && !params.skip_qc) {
         if (params.skip_reassembly){
-            cleanup_trimmed_fastq_files(bin_refinement.out.fastq_path_ch)
+            CLEANUP_TRIMMED_FASTQ_FILES(BIN_REFINEMENT.out.fastq_path_ch)
         }
         else {
-            cleanup_trimmed_fastq_files(reassemble_bins.out.fastq_path_ch)
+            CLEANUP_TRIMMED_FASTQ_FILES(REASSEMBLE_BINS.out.fastq_path_ch)
         }
     }
     if (!params.keep_assembly) {
-        cleanup_assembly(binning.out.assembly_ch)
+        CLEANUP_ASSEMBLY(BINNING.out.assembly_ch)
     }
     if (!params.keep_binning) {
-        cleanup_binning(binning.out.workdir, bin_refinement.out.workdir)
+        CLEANUP_BINNING(BINNING.out.workdir, BIN_REFINEMENT.out.workdir)
     }
     if (!params.keep_bin_refinement && !params.keep_allbins && params.skip_reassembly) {
-         cleanup_bin_refinement(bin_refinement.out.workdir)
+         CLEANUP_BIN_REFINEMENT(BIN_REFINEMENT.out.workdir)
     }
     if (!params.keep_reassembly && !params.skip_reassembly && !params.keep_allbins) {
-        cleanup_refinement_reassembly(bin_refinement.out.workdir, reassemble_bins.out.workdir)
+        CLEANUP_REFINEMENT_REASSEMBLY(BIN_REFINEMENT.out.workdir, REASSEMBLE_BINS.out.workdir)
     }
 }

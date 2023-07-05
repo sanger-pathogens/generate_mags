@@ -41,16 +41,16 @@ workflow {
 
     if (params.skip_qc) {
         ASSEMBLY(fastq_path_ch)
-    }
-    else {
+    } else {
         METAWRAP_QC(fastq_path_ch)
         ASSEMBLY(METAWRAP_QC.out.filtered_reads)
     }
+
     BINNING(ASSEMBLY.out.fastq_path_ch, ASSEMBLY.out.assembly_ch)
+    
     if (params.skip_reassembly) {
         BIN_REFINEMENT(BINNING.out.binning_ch, BINNING.out.fastq_path_ch)
-    }
-    else {
+    } else {
         BIN_REFINEMENT(BINNING.out.binning_ch, BINNING.out.fastq_path_ch)
         REASSEMBLE_BINS(BIN_REFINEMENT.out.bin_refinement_ch, BIN_REFINEMENT.out.fastq_path_ch)
     }
@@ -59,20 +59,23 @@ workflow {
     if (!params.keep_metawrap_qc && !params.skip_qc) {
         if (params.skip_reassembly){
             CLEANUP_TRIMMED_FASTQ_FILES(BIN_REFINEMENT.out.fastq_path_ch)
-        }
-        else {
+        } else {
             CLEANUP_TRIMMED_FASTQ_FILES(REASSEMBLE_BINS.out.fastq_path_ch)
         }
     }
+
     if (!params.keep_assembly) {
         CLEANUP_ASSEMBLY(BINNING.out.assembly_ch)
     }
+
     if (!params.keep_binning) {
         CLEANUP_BINNING(BINNING.out.workdir, BIN_REFINEMENT.out.workdir)
     }
+
     if (!params.keep_bin_refinement && !params.keep_allbins && params.skip_reassembly) {
          CLEANUP_BIN_REFINEMENT(BIN_REFINEMENT.out.workdir)
     }
+    
     if (!params.keep_reassembly && !params.skip_reassembly && !params.keep_allbins) {
         CLEANUP_REFINEMENT_REASSEMBLY(BIN_REFINEMENT.out.workdir, REASSEMBLE_BINS.out.workdir)
     }

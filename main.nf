@@ -1,12 +1,11 @@
 #!/usr/bin/env nextflow
 
-include { validate_parameters } from './modules/helper_functions.nf'
-include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
-include { ASSEMBLY; BINNING; BIN_REFINEMENT; REASSEMBLE_BINS } from './modules/metawrap.nf'
-include { CLEANUP_ASSEMBLY; CLEANUP_BINNING; CLEANUP_BIN_REFINEMENT; CLEANUP_REFINEMENT_REASSEMBLY;
-          CLEANUP_TRIMMED_FASTQ_FILES } from './modules/cleanup/cleanup.nf'
+/*
+========================================================================================
+    HELP
+========================================================================================
+*/
 
-// helper functions
 def printHelp() {
     log.info """
     Usage:
@@ -32,7 +31,38 @@ if (params.help) {
     exit 0
 }
 
+/*
+========================================================================================
+    IMPORT MODULES/SUBWORKFLOWS
+========================================================================================
+*/
+
+//
+// MODULES
+//
+include { validate_parameters } from './modules/helper_functions.nf'
+include { ASSEMBLY; BINNING; BIN_REFINEMENT; REASSEMBLE_BINS } from './modules/metawrap.nf'
+include { CLEANUP_ASSEMBLY; CLEANUP_BINNING; CLEANUP_BIN_REFINEMENT; CLEANUP_REFINEMENT_REASSEMBLY;
+          CLEANUP_TRIMMED_FASTQ_FILES } from './modules/cleanup/cleanup.nf'
+
+//
+// SUBWORKFLOWS
+//
+include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
+
+/*
+========================================================================================
+    VALIDATE INPUTS
+========================================================================================
+*/
+
 validate_parameters()
+
+/*
+========================================================================================
+    RUN MAIN WORKFLOW
+========================================================================================
+*/
 
 workflow {
     manifest_ch = Channel.fromPath(params.manifest, checkIfExists: true)
@@ -75,7 +105,7 @@ workflow {
     if (!params.keep_bin_refinement && !params.keep_allbins && params.skip_reassembly) {
          CLEANUP_BIN_REFINEMENT(BIN_REFINEMENT.out.workdir)
     }
-    
+
     if (!params.keep_reassembly && !params.skip_reassembly && !params.keep_allbins) {
         CLEANUP_REFINEMENT_REASSEMBLY(BIN_REFINEMENT.out.workdir, REASSEMBLE_BINS.out.workdir)
     }

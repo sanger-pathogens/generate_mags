@@ -1,5 +1,9 @@
 process TRIMGALORE {
-    tag "$sample_id"
+    tag "${sample_id}"
+    label 'cpu_1'
+    label 'mem_1'  //TODO: How much memory is typically required?
+    label 'time_1'  //TODO: Allow for longer time?
+
     container '/software/pathogen/images/trimgalore-v0.4.4.simg'
 
     input:

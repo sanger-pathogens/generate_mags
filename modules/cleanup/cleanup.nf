@@ -40,6 +40,7 @@ process CLEANUP_INSTRAIN_OUTPUT {
     input:
          path(workdir)
          val(sample_id)
+
     script:
         """
         # Remove instrain results
@@ -73,6 +74,7 @@ process CLEANUP_BINNING {
     input:
          path(workdir)
          path(bin_refinement_dir)
+
     script:
         """
         binning_dir=\$(cat $workdir)
@@ -88,6 +90,7 @@ process CLEANUP_BIN_REFINEMENT {
 
     input:
          path(workdir)
+
     script:
         """
         bin_refinement_dir=\$(cat $workdir)
@@ -104,6 +107,7 @@ process CLEANUP_REFINEMENT_REASSEMBLY {
     input:
          path(refinement_dir)
          path(reassembly_dir)
+
     script:
         """
         # clean reassembly
@@ -119,6 +123,3 @@ process CLEANUP_REFINEMENT_REASSEMBLY {
         rm -rf *_bin_refinement*
         """
 }
-
-
-

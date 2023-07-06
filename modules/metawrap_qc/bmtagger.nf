@@ -1,7 +1,7 @@
 process BMTAGGER {
     tag "${sample_id}"
     label 'cpu_1'
-    label 'mem_8'  //TODO Add mem_10 label?
+    label 'mem_16'  //TODO Add mem_10 label?
     label 'time_queue_from_normal'
 
     container '/software/pathogen/images/bmtagger-3.101--h470a237_4.simg'

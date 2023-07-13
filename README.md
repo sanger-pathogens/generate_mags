@@ -2,19 +2,21 @@
 
 ## Usage
 ```
-nextflow run .
-  --manifest                   Manifest containing paths to fastq files (mandatory)
-  --skip_qc                    skip metawrap qc step - default false (optional)
-  --keep_allbins               keep allbins option for bin refinement - default false (optional)
-  --keep_assembly              don't cleanup assembly files - default false (optional)
-  --keep_binning               don't cleanup binning files - default false (optional)
-  --keep_bin_refinement        don't cleanup bin refinement files - default false (optional)
-  --keep_reassembly            don't cleanup reassembly files - default false (optional)
-  --keep_metawrap_qc           don't cleanup metawrap qc files - default false (optional)
-  --skip_reassembly            skip reassembly step - default false (optional)
-  --fastspades                 use fastspades assembly option - default false (optional)
-  -profile                     always use sanger_lsf when running on the farm (mandatory)
-  --help                       print this help message (optional)
+Usage:
+    nextflow run main.nf
+
+Options:
+    --manifest                   Manifest containing paths to fastq files. (mandatory)
+    --skip_qc                    Skip metawrap qc step. [default: false] (optional)
+    --keep_allbins               Keep allbins option for bin refinement.. [default: false] (optional)
+    --keep_assembly              Don't cleanup assembly files. [default: false] (optional)
+    --keep_binning               Don't cleanup binning files. [default: false] (optional)
+    --keep_bin_refinement        Don't cleanup bin refinement files. [default: false] (optional)
+    --keep_reassembly            Don't cleanup reassembly files. [default: false] (optional)
+    --keep_metawrap_qc           Don't cleanup metawrap qc files. [default: false] (optional)
+    --skip_reassembly            Skip reassembly step. [default: false] (optional)
+    --fastspades                 Use fastspades assembly option. [default: false] (optional)
+    --help                       Print this help message. (optional)
 ```
 
 ## Generating manifests

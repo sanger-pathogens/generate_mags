@@ -2,7 +2,7 @@ process FILTER_HOST_READS {
     tag "${sample_id}"
     label 'cpu_1'
     label 'mem_1'
-    label 'time_1'  //TODO: Allow for longer time?
+    label 'time_1'
 
     publishDir "${params.results_dir}/metawrap_qc/cleaned_reads", mode: 'copy', overwrite: true, pattern: "*_clean*.fastq.gz"
     

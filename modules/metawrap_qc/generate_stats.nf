@@ -2,7 +2,7 @@ process GENERATE_STATS {
     tag "${sample_id}"
     label 'cpu_1'
     label 'mem_1'
-    label 'time_1'  //TODO: Allow for longer time?
+    label 'time_1'
     
     container '/software/pathogen/images/metawrap_qc_python-1.0.simg'
 

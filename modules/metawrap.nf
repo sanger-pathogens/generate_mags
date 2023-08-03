@@ -1,7 +1,7 @@
 process ASSEMBLY {
     tag "${sample_id}"
     label 'cpu_4'  //TODO: No threads arg to metawrap, does this actually improve performance?
-    label 'mem_32'  //TODO: Add mem_100 label to generic config?
+    label 'mem_32'
     label 'time_queue_from_normal'
 
     input:
@@ -79,7 +79,7 @@ process BINNING {
 process BIN_REFINEMENT {
     tag "${sample_id}"
     label 'cpu_4'  //TODO: No threads arg to metawrap, does this actually improve performance?
-    label 'mem_32'  //TODO: Add mem_100 label to generic config?
+    label 'mem_64'
     label 'time_queue_from_normal'
 
     if (params.keep_allbins) { 
@@ -154,7 +154,7 @@ process BIN_REFINEMENT {
 process REASSEMBLE_BINS {
     tag "${sample_id}"
     label 'cpu_4'  //TODO: No threads arg to metawrap, does this actually improve performance?
-    label 'mem_32'  //TODO: Add mem_100 label to generic config?
+    label 'mem_64'
     label 'time_queue_from_normal'
 
     publishDir "${params.results_dir}/${sample_id}_reassemble_bins_outdir", mode: 'copy', overwrite: true, pattern: '*.{fa,stats}'

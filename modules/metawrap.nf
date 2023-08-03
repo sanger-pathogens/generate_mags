@@ -1,6 +1,6 @@
 process ASSEMBLY {
     tag "${sample_id}"
-    label 'cpu_4'  //TODO: No threads arg to metawrap, does this actually improve performance?
+    label 'cpu_4'
     label 'mem_32'
     label 'time_queue_from_normal'
 
@@ -78,7 +78,7 @@ process BINNING {
 
 process BIN_REFINEMENT {
     tag "${sample_id}"
-    label 'cpu_4'  //TODO: No threads arg to metawrap, does this actually improve performance?
+    label 'cpu_4'
     label 'mem_64'
     label 'time_queue_from_normal'
 
@@ -153,7 +153,7 @@ process BIN_REFINEMENT {
 
 process REASSEMBLE_BINS {
     tag "${sample_id}"
-    label 'cpu_4'  //TODO: No threads arg to metawrap, does this actually improve performance?
+    label 'cpu_4'
     label 'mem_64'
     label 'time_queue_from_normal'
 

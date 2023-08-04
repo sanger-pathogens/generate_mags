@@ -1,254 +1,111 @@
 #!/usr/bin/env nextflow
 
-include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
-include { CLEANUP_ASSEMBLY; CLEANUP_BINNING; CLEANUP_BIN_REFINEMENT; CLEANUP_REFINEMENT_REASSEMBLY;
-          CLEANUP_TRIMMED_FASTQ_FILES } from './modules/cleanup/cleanup.nf'
+/*
+========================================================================================
+    HELP
+========================================================================================
+*/
 
-// helper functions
 def printHelp() {
     log.info """
     Usage:
-        nextflow run .
+        nextflow run main.nf
 
     Options:
-        --manifest                   Manifest containing paths to fastq files (mandatory)
-        --skip_qc                    skip metawrap qc step - default false (optional)
-        --keep_allbins               keep allbins option for bin refinement - default false (optional)
-        --keep_assembly              don't cleanup assembly files - default false (optional)
-        --keep_binning               don't cleanup binning files - default false (optional)
-        --keep_bin_refinement        don't cleanup bin refinement files - default false (optional)
-        --keep_reassembly            don't cleanup reassembly files - default false (optional)
-        --keep_metawrap_qc           don't cleanup metawrap qc files - default false (optional)
-        --skip_reassembly            skip reassembly step - default false (optional)
-        --fastspades                 use fastspades assembly option - default false (optional)
-        --help                       print this help message (optional)
+        --manifest                   Manifest containing paths to fastq files. (mandatory)
+        --skip_qc                    Skip metawrap qc step. [default: false] (optional)
+        --keep_allbins               Keep allbins option for bin refinement.. [default: false] (optional)
+        --keep_assembly              Don't cleanup assembly files. [default: false] (optional)
+        --keep_binning               Don't cleanup binning files. [default: false] (optional)
+        --keep_bin_refinement        Don't cleanup bin refinement files. [default: false] (optional)
+        --keep_reassembly            Don't cleanup reassembly files. [default: false] (optional)
+        --keep_metawrap_qc           Don't cleanup metawrap qc files. [default: false] (optional)
+        --skip_reassembly            Skip reassembly step. [default: false] (optional)
+        --fastspades                 Use fastspades assembly option. [default: false] (optional)
+        --help                       Print this help message. (optional)
     """.stripIndent()
 }
 
-def validate_parameters () {
-    if (!params.manifest) {
-        log.error("Please specify a manifest using the --manifest option")
-    }
+if (params.help) {
+    printHelp()
+    exit 0
 }
 
-process ASSEMBLY {
-    input:
-    tuple val(sample_id), file(first_read), file(second_read)
+/*
+========================================================================================
+    IMPORT MODULES/SUBWORKFLOWS
+========================================================================================
+*/
 
-    output:
-    tuple val(sample_id), path(first_read), path(second_read), emit: fastq_path_ch
-    path(assembly_file), emit: assembly_ch
+//
+// MODULES
+//
+include { validate_parameters } from './modules/helper_functions.nf'
+include { ASSEMBLY; BINNING; BIN_REFINEMENT; REASSEMBLE_BINS } from './modules/metawrap.nf'
+include { CLEANUP_ASSEMBLY; CLEANUP_BINNING; CLEANUP_BIN_REFINEMENT; CLEANUP_REFINEMENT_REASSEMBLY;
+          CLEANUP_TRIMMED_FASTQ_FILES } from './modules/cleanup/cleanup.nf'
 
-    // dummy process for testing publishDir directives
-    stub:
-    assembly_file="final_assembly.fasta"
-    """
-    touch final_assembly.fasta
-    """
+//
+// SUBWORKFLOWS
+//
+include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
 
-    script:
-    assembly_file="final_assembly.fasta"
-    """
-    cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
-    if $params.keep_assembly_files && $params.fastspades
-    then
-        cmd="\${cmd} --fastspades --keepfiles"
-    elif $params.fastspades
-    then
-        cmd="\${cmd} --fastspades"
-    elif $params.keep_assembly_files
-    then
-        cmd="\${cmd} --keepfiles"
-    fi
-    eval "\${cmd}"
-    """
-}
+/*
+========================================================================================
+    VALIDATE INPUTS
+========================================================================================
+*/
 
-process BINNING {
-    input:
-    tuple val(sample_id), file(first_read), file(second_read)
-    file(assembly_file)
+validate_parameters()
 
-    output:
-    path "binning", emit: binning_ch
-    tuple val(sample_id), file(first_read), file(second_read), emit: fastq_path_ch
-    path("${workdir}"), emit: workdir
-    path("${assembly_file}"), emit: assembly_ch
-
-    // dummy process for testing publishDir directives
-    stub:
-    workdir="binning_workdir.txt"
-    assembly_file="final_assembly.fasta"
-    """
-    pwd > binning_workdir.txt
-    mkdir -p binning
-    mkdir -p binning/metabat2_bins
-    mkdir -p binning/maxbin2_bins
-    mkdir -p binning/concoct_bins
-    touch binning/metabat2_bins/blah.fa
-    touch binning/maxbin2_bins/blah.fa
-    touch binning/concoct_bins/blah.fa
-    """
-
-    script:
-    workdir="binning_workdir.txt"
-    assembly_file="final_assembly.fasta"
-    """
-    pwd > binning_workdir.txt
-    metawrap binning -a $assembly_file -o binning $first_read $second_read
-    """
-}
-
-process BIN_REFINEMENT {
-    if (params.keep_allbins) { publishDir path: "${params.results_dir}", mode: 'copy', pattern: "*_bin_refinement_outdir" }
-    if (params.skip_reassembly && !params.keep_allbins) { publishDir path: { "${params.results_dir}/${sample_id}_bin_refinement_outdir" }, mode: 'copy', pattern: '*.{fa,stats}' }
-    input:
-    path(binning_dir)
-    tuple val(sample_id), file(first_read), file(second_read)
-
-    output:
-    path "${sample_id}_bin_refinement_outdir", emit: bin_refinement_ch
-    tuple val(sample_id), file(first_read), file(second_read), emit: fastq_path_ch
-    path("${workdir}"), emit: workdir
-    path("*.fa"), optional: true
-    path("*.stats"), optional: true
-
-    // dummy process for testing publishDir directives
-    stub:
-    workdir="bin_refinement_workdir.txt"
-    """
-    pwd > bin_refinement_workdir.txt
-    mkdir -p ${sample_id}_bin_refinement_outdir/metawrap_50_5_bins
-    touch ${sample_id}_bin_refinement_outdir/metawrap_50_5_bins/blah.fa
-    touch ${sample_id}_bin_refinement_outdir/metawrap_50_5_bins/bleh.fa
-    touch ${sample_id}_bin_refinement_outdir/metawrap_50_5_bins/blah.stats
-    touch ${sample_id}_bin_refinement_outdir/metawrap_50_5_bins/bleh.stats
-
-    # if we are publishing results, collect fasta and stats files whilst renaming
-    if  $params.skip_reassembly
-    then
-       if [ "$params.keep_allbins" == "false" ]
-       then
-           shopt -s globstar
-           for f in **/*.{fa,stats}
-           do
-              file_name=\$(basename \$f)
-              mv \$f ${sample_id}"_"\${file_name}
-           done
-       fi
-    fi
-    """
-
-    script:
-    workdir="bin_refinement_workdir.txt"
-    """
-    pwd > bin_refinement_workdir.txt
-    if $params.keep_allbins
-    then
-        metawrap bin_refinement --keep_allbins -o ${sample_id}_bin_refinement_outdir -A ${binning_dir}/metabat2_bins/ -B ${binning_dir}/maxbin2_bins/ -C ${binning_dir}/concoct_bins/
-    else
-        metawrap bin_refinement -o ${sample_id}_bin_refinement_outdir -A ${binning_dir}/metabat2_bins/ -B ${binning_dir}/maxbin2_bins/ -C ${binning_dir}/concoct_bins/
-    fi
-    if  $params.skip_reassembly
-    then
-       if [ "$params.keep_allbins" == "false" ]
-       then
-           shopt -s globstar
-           for f in **/*.{fa,stats}
-           do
-              file_name=\$(basename \$f)
-              mv \$f ${sample_id}"_"\${file_name}
-           done
-       fi
-    fi
-    """
-}
-
-process REASSEMBLE_BINS {
-    publishDir "${params.results_dir}/${sample_id}_reassemble_bins_outdir", mode: 'copy', overwrite: true, pattern: '*.{fa,stats}'
-    input:
-    path(bin_refinement_dir)
-    tuple val(sample_id), file(first_read), file(second_read)
-
-    output:
-    path("*.fa")
-    path("*.stats")
-    path("${workdir}"), emit: workdir
-    tuple val(sample_id), file(first_read), file(second_read), emit: fastq_path_ch
-
-    // dummy process for testing publishDir directives
-    stub:
-    workdir="reassemble_bins_workdir.txt"
-    """
-    pwd > reassemble_bins_workdir.txt
-    touch blah.fa
-    touch bleh.fa
-    touch blah.stats
-    touch bleh.stats
-    shopt -s globstar
-    for f in **/*.{fa,stats}
-    do
-      file_name=\$(basename \$f)
-      mv \$f ./${sample_id}_\${file_name}
-    done
-    """
-
-    script:
-    workdir="reassemble_bins_workdir.txt"
-    """
-    pwd > reassemble_bins_workdir.txt
-    metawrap reassemble_bins -b ${bin_refinement_dir}/metawrap_50_5_bins/ -o ${sample_id}_reassemble_bins_outdir -1 $first_read -2 $second_read
-    shopt -s globstar
-    for f in **/*.{fa,stats}
-    do
-      file_name=\$(basename \$f)
-      mv \$f ./${sample_id}_\${file_name}
-    done
-    """
-}
+/*
+========================================================================================
+    RUN MAIN WORKFLOW
+========================================================================================
+*/
 
 workflow {
-    if (params.help) {
-        printHelp()
-        exit 0
-    }
-    validate_parameters()
     manifest_ch = Channel.fromPath(params.manifest, checkIfExists: true)
     fastq_path_ch = manifest_ch.splitCsv(header: true, sep: ',')
             .map{ row -> tuple(row.sample_id, file(row.first_read), file(row.second_read)) }
+
     if (params.skip_qc) {
         ASSEMBLY(fastq_path_ch)
-    }
-    else {
+    } else {
         METAWRAP_QC(fastq_path_ch)
         ASSEMBLY(METAWRAP_QC.out.filtered_reads)
     }
+
     BINNING(ASSEMBLY.out.fastq_path_ch, ASSEMBLY.out.assembly_ch)
+    
     if (params.skip_reassembly) {
         BIN_REFINEMENT(BINNING.out.binning_ch, BINNING.out.fastq_path_ch)
-    }
-    else {
+    } else {
         BIN_REFINEMENT(BINNING.out.binning_ch, BINNING.out.fastq_path_ch)
         REASSEMBLE_BINS(BIN_REFINEMENT.out.bin_refinement_ch, BIN_REFINEMENT.out.fastq_path_ch)
     }
+
     // cleanup
     if (!params.keep_metawrap_qc && !params.skip_qc) {
         if (params.skip_reassembly){
             CLEANUP_TRIMMED_FASTQ_FILES(BIN_REFINEMENT.out.fastq_path_ch)
-        }
-        else {
+        } else {
             CLEANUP_TRIMMED_FASTQ_FILES(REASSEMBLE_BINS.out.fastq_path_ch)
         }
     }
+
     if (!params.keep_assembly) {
         CLEANUP_ASSEMBLY(BINNING.out.assembly_ch)
     }
+
     if (!params.keep_binning) {
         CLEANUP_BINNING(BINNING.out.workdir, BIN_REFINEMENT.out.workdir)
     }
+
     if (!params.keep_bin_refinement && !params.keep_allbins && params.skip_reassembly) {
          CLEANUP_BIN_REFINEMENT(BIN_REFINEMENT.out.workdir)
     }
+
     if (!params.keep_reassembly && !params.skip_reassembly && !params.keep_allbins) {
         CLEANUP_REFINEMENT_REASSEMBLY(BIN_REFINEMENT.out.workdir, REASSEMBLE_BINS.out.workdir)
     }

@@ -55,7 +55,7 @@ if  [ ! ${manifest_file} ]; then
     manifest_file="manifest.csv"
 fi
 
-echo "sample_id,first_read,second_read" > ${manifest_file}
+echo "ID,R1,R2" > ${manifest_file}
 
 pf data -t file -i ${lanes_file} -f fastq | sort 2>/dev/null |  xargs -n1 echo > Temp_file_path.txt
 

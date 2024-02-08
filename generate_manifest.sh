@@ -2,7 +2,7 @@
 
 fastq_paths=$1
 count=0
-echo "sample_id,first_read,second_read" > manifest.csv
+echo "ID,R1,R2" > manifest.csv
 
 while read line
 do

@@ -6,7 +6,7 @@ Usage:
     nextflow run main.nf
 
 Options:
-    --manifest                   Manifest containing paths to fastq files. (mandatory)
+    --manifest                   Manifest containing paths to fastq files with headers ID,R1,R2. (mandatory)
     --skip_qc                    Skip metawrap qc step. [default: false] (optional)
     --keep_allbins               Keep allbins option for bin refinement.. [default: false] (optional)
     --keep_assembly              Don't cleanup assembly files. [default: false] (optional)

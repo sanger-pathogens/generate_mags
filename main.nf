@@ -12,7 +12,7 @@ def printHelp() {
         nextflow run main.nf
 
     Options:
-        --manifest                   Manifest containing paths to fastq files. (mandatory)
+        --manifest                   Manifest containing paths to fastq files with headers ID,R1,R2. (mandatory)
         --skip_qc                    Skip metawrap qc step. [default: false] (optional)
         --keep_allbins               Keep allbins option for bin refinement.. [default: false] (optional)
         --keep_assembly              Don't cleanup assembly files. [default: false] (optional)
@@ -67,7 +67,7 @@ validate_parameters()
 workflow {
     manifest_ch = Channel.fromPath(params.manifest, checkIfExists: true)
     fastq_path_ch = manifest_ch.splitCsv(header: true, sep: ',')
-            .map{ row -> tuple(row.sample_id, file(row.first_read), file(row.second_read)) }
+            .map{ row -> tuple(row.ID, file(row.R1), file(row.R2)) }
 
     if (params.skip_qc) {
         ASSEMBLY(fastq_path_ch)

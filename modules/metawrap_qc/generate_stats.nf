@@ -4,7 +4,7 @@ process GENERATE_STATS {
     label 'mem_1'
     label 'time_1'
     
-    container '/software/pathogen/images/metawrap_qc_python-1.0.simg'
+    container 'quay.io/sangerpathogens/metawrap_qc_python:1.0'
 
     input:
     tuple val(sample_id), path(trimmed_read_1), path(trimmed_read_2), path(clean_read_1), path(clean_read_2), path(host_read_1), path(host_read_2), path(original_read_1), path(original_read_2)

@@ -4,7 +4,7 @@ process BMTAGGER {
     label 'mem_10'
     label 'time_queue_from_normal'
 
-    container '/software/pathogen/images/bmtagger-3.101--h470a237_4.simg'
+    container 'quay.io/biocontainers/bmtagger:3.101--h470a237_4'
 
     input:
     tuple val(sample_id), path(first_read), path(second_read)

@@ -24,12 +24,13 @@ process ASSEMBLY {
     assembly_file="final_assembly.fasta"
     """
     cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
+    if $params.lock_phred
+    then
+        cmd="\${cmd/assembly/assembly_locked_phred}"
+    fi
     if $params.keep_assembly_files && $params.fastspades
     then
         cmd="\${cmd} --fastspades --keepfiles"
-    elif $params.lock_phred
-    then
-        cmd="metawrap assembly_locked_phred -1 $first_read -2 $second_read -o ."
     elif $params.fastspades
     then
         cmd="\${cmd} --fastspades"

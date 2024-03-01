@@ -20,24 +20,37 @@ process ASSEMBLY {
 
     script:
     assembly_file="final_assembly.fasta"
-    """
-    cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
-    if $params.lock_phred
-    then
-        cmd="\${cmd/assembly/assembly_locked_phred}"
-    fi
-    if $params.keep_assembly_files && $params.fastspades
-    then
-        cmd="\${cmd} --fastspades --keepfiles"
-    elif $params.fastspades
-    then
-        cmd="\${cmd} --fastspades"
-    elif $params.keep_assembly_files
-    then
-        cmd="\${cmd} --keepfiles"
-    fi
-    eval "\${cmd}"
-    """
+
+    if ( !params.lock_phred )
+        """
+        cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
+        if $params.keep_assembly_files && $params.fastspades
+        then
+            cmd="\${cmd} --fastspades --keepfiles"
+        elif $params.fastspades
+        then
+            cmd="\${cmd} --fastspades"
+        elif $params.keep_assembly_files
+        then
+            cmd="\${cmd} --keepfiles"
+        fi
+        eval "\${cmd}"
+        """
+    else
+        """
+        cmd="metawrap assembly_locked_phred -1 $first_read -2 $second_read -o ."
+        if $params.keep_assembly_files && $params.fastspades
+        then
+            cmd="\${cmd} --fastspades --keepfiles"
+        elif $params.fastspades
+        then
+            cmd="\${cmd} --fastspades"
+        elif $params.keep_assembly_files
+        then
+            cmd="\${cmd} --keepfiles"
+        fi
+        eval "\${cmd}"
+        """
 }
 
 process BINNING {

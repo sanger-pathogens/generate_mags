@@ -4,7 +4,7 @@ process COLLATE_STATS {
     label 'mem_1'
     label 'time_1'
 
-    publishDir "${params.results_dir}/metawrap_qc", mode: 'copy', overwrite: true, pattern: "*_statistics.csv"
+    publishDir "${params.outdir}/metawrap_qc", mode: 'copy', overwrite: true, pattern: "*_statistics.csv"
     
     input:
     path(stats_files)

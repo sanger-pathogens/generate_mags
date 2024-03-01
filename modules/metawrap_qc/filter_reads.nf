@@ -4,7 +4,7 @@ process FILTER_HOST_READS {
     label 'mem_1'
     label 'time_1'
 
-    publishDir "${params.results_dir}/metawrap_qc/cleaned_reads", mode: 'copy', overwrite: true, pattern: "*_clean*.fastq.gz"
+    publishDir "${params.outdir}/metawrap_qc/cleaned_reads", mode: 'copy', overwrite: true, pattern: "*_clean*.fastq.gz"
     
     container 'quay.io/sangerpathogens/metawrap_qc_python:1.0'
 
@@ -34,7 +34,7 @@ process GET_HOST_READS {
     label 'mem_4'  //TODO: Need 5GB?
     label 'time_1'  //TODO: Allow for longer time?
 
-    if (params.publish_host_reads) { publishDir path: "${params.results_dir}/host_reads", mode: 'copy', overwrite: true, pattern: "*_host*.fastq.gz" }
+    if (params.publish_host_reads) { publishDir path: "${params.outdir}/host_reads", mode: 'copy', overwrite: true, pattern: "*_host*.fastq.gz" }
     tag "$sample_id"
     container 'quay.io/sangerpathogens/metawrap_qc_python:1.0'
 

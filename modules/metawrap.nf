@@ -89,10 +89,10 @@ process BIN_REFINEMENT {
     container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
 
     if (params.keep_allbins) { 
-        publishDir path: "${params.results_dir}", mode: 'copy', pattern: "*_bin_refinement_outdir"
+        publishDir path: "${params.outdir}", mode: 'copy', pattern: "*_bin_refinement_outdir"
     }
     if (params.skip_reassembly && !params.keep_allbins) {
-        publishDir path: { "${params.results_dir}/${sample_id}_bin_refinement_outdir" }, mode: 'copy', pattern: '*.{fa,stats}'
+        publishDir path: { "${params.outdir}/${sample_id}_bin_refinement_outdir" }, mode: 'copy', pattern: '*.{fa,stats}'
     }
 
     input:
@@ -165,7 +165,7 @@ process REASSEMBLE_BINS {
 
     container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
 
-    publishDir "${params.results_dir}/${sample_id}_reassemble_bins_outdir", mode: 'copy', overwrite: true, pattern: '*.{fa,stats}'
+    publishDir "${params.outdir}/${sample_id}_reassemble_bins_outdir", mode: 'copy', overwrite: true, pattern: '*.{fa,stats}'
     
     input:
     path(bin_refinement_dir)

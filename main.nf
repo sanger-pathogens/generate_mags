@@ -67,7 +67,7 @@ validate_parameters()
 workflow {
     manifest_ch = Channel.fromPath(params.manifest, checkIfExists: true)
     fastq_path_ch = manifest_ch.splitCsv(header: true, sep: ',')
-            .map{ row -> tuple(row.sample_id, file(row.first_read), file(row.second_read)) }
+            .map{ row -> tuple(row.ID, file(row.R1), file(row.R2)) }
 
     if (params.skip_qc) {
         ASSEMBLY(fastq_path_ch)

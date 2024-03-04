@@ -4,7 +4,7 @@ process ASSEMBLY {
     label 'mem_32'
     label 'time_queue_from_normal'
 
-    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c13-phred'
 
     input:
     tuple val(sample_id), file(first_read), file(second_read)
@@ -22,20 +22,37 @@ process ASSEMBLY {
 
     script:
     assembly_file="final_assembly.fasta"
-    """
-    cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
-    if $params.keep_assembly_files && $params.fastspades
-    then
-        cmd="\${cmd} --fastspades --keepfiles"
-    elif $params.fastspades
-    then
-        cmd="\${cmd} --fastspades"
-    elif $params.keep_assembly_files
-    then
-        cmd="\${cmd} --keepfiles"
-    fi
-    eval "\${cmd}"
-    """
+
+    if ( !params.lock_phred )
+        """
+        cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
+        if $params.keep_assembly_files && $params.fastspades
+        then
+            cmd="\${cmd} --fastspades --keepfiles"
+        elif $params.fastspades
+        then
+            cmd="\${cmd} --fastspades"
+        elif $params.keep_assembly_files
+        then
+            cmd="\${cmd} --keepfiles"
+        fi
+        eval "\${cmd}"
+        """
+    else
+        """
+        cmd="metawrap assembly_locked_phred -1 $first_read -2 $second_read -o ."
+        if $params.keep_assembly_files && $params.fastspades
+        then
+            cmd="\${cmd} --fastspades --keepfiles"
+        elif $params.fastspades
+        then
+            cmd="\${cmd} --fastspades"
+        elif $params.keep_assembly_files
+        then
+            cmd="\${cmd} --keepfiles"
+        fi
+        eval "\${cmd}"
+        """
 }
 
 process BINNING {

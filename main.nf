@@ -13,6 +13,7 @@ def printHelp() {
 
     Options:
         --manifest                   Manifest containing paths to fastq files with headers ID,R1,R2. (mandatory)
+        --outdir                     Directory to store pipeline output. [default: ./results] (optional)
         --skip_qc                    Skip metawrap qc step. [default: false] (optional)
         --keep_allbins               Keep allbins option for bin refinement.. [default: false] (optional)
         --keep_assembly              Don't cleanup assembly files. [default: false] (optional)

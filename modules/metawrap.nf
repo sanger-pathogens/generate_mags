@@ -4,7 +4,7 @@ process ASSEMBLY {
     label 'mem_32'
     label 'time_queue_from_normal'
 
-    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c13-phred'
 
     input:
     tuple val(sample_id), file(first_read), file(second_read)

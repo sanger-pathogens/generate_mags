@@ -4,6 +4,8 @@ process ASSEMBLY {
     label 'mem_32'
     label 'time_queue_from_normal'
 
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
+
     input:
     tuple val(sample_id), file(first_read), file(second_read)
 
@@ -41,6 +43,8 @@ process BINNING {
     label 'cpu_1'
     label 'mem_8'
     label 'time_queue_from_normal'
+
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
 
     input:
     tuple val(sample_id), file(first_read), file(second_read)
@@ -82,11 +86,13 @@ process BIN_REFINEMENT {
     label 'mem_64'
     label 'time_queue_from_normal'
 
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
+
     if (params.keep_allbins) { 
-        publishDir path: "${params.results_dir}", mode: 'copy', pattern: "*_bin_refinement_outdir"
+        publishDir path: "${params.outdir}", mode: 'copy', pattern: "*_bin_refinement_outdir"
     }
     if (params.skip_reassembly && !params.keep_allbins) {
-        publishDir path: { "${params.results_dir}/${sample_id}_bin_refinement_outdir" }, mode: 'copy', pattern: '*.{fa,stats}'
+        publishDir path: { "${params.outdir}/${sample_id}_bin_refinement_outdir" }, mode: 'copy', pattern: '*.{fa,stats}'
     }
 
     input:
@@ -157,7 +163,9 @@ process REASSEMBLE_BINS {
     label 'mem_64'
     label 'time_queue_from_normal'
 
-    publishDir "${params.results_dir}/${sample_id}_reassemble_bins_outdir", mode: 'copy', overwrite: true, pattern: '*.{fa,stats}'
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
+
+    publishDir "${params.outdir}/${sample_id}_reassemble_bins_outdir", mode: 'copy', overwrite: true, pattern: '*.{fa,stats}'
     
     input:
     path(bin_refinement_dir)

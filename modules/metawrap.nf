@@ -4,7 +4,7 @@ process ASSEMBLY {
     label 'mem_32'
     label 'time_queue_from_normal'
 
-    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c13-phred'
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-phred_locked-c3'
 
     input:
     tuple val(sample_id), file(first_read), file(second_read)
@@ -61,7 +61,7 @@ process BINNING {
     label 'mem_8'
     label 'time_queue_from_normal'
 
-    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-phred_locked-c3'
 
     input:
     tuple val(sample_id), file(first_read), file(second_read)
@@ -103,7 +103,7 @@ process BIN_REFINEMENT {
     label 'mem_64'
     label 'time_queue_from_normal'
 
-    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-phred_locked-c3'
 
     if (params.keep_allbins) { 
         publishDir path: "${params.outdir}", mode: 'copy', pattern: "*_bin_refinement_outdir"
@@ -180,7 +180,7 @@ process REASSEMBLE_BINS {
     label 'mem_64'
     label 'time_queue_from_normal'
 
-    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-c12'
+    container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-phred_locked-c3'
 
     publishDir "${params.outdir}/${sample_id}_reassemble_bins_outdir", mode: 'copy', overwrite: true, pattern: '*.{fa,stats}'
     
@@ -213,14 +213,26 @@ process REASSEMBLE_BINS {
 
     script:
     workdir="reassemble_bins_workdir.txt"
-    """
-    pwd > reassemble_bins_workdir.txt
-    metawrap reassemble_bins -b ${bin_refinement_dir}/metawrap_50_5_bins/ -o ${sample_id}_reassemble_bins_outdir -1 $first_read -2 $second_read
-    shopt -s globstar
-    for f in **/*.{fa,stats}
-    do
-      file_name=\$(basename \$f)
-      mv \$f ./${sample_id}_\${file_name}
-    done
-    """
+    if ( !params.lock_phred )
+        """
+        pwd > reassemble_bins_workdir.txt
+        metawrap reassemble_bins -b ${bin_refinement_dir}/metawrap_50_5_bins/ -o ${sample_id}_reassemble_bins_outdir -1 $first_read -2 $second_read
+        shopt -s globstar
+        for f in **/*.{fa,stats}
+        do
+        file_name=\$(basename \$f)
+        mv \$f ./${sample_id}_\${file_name}
+        done
+        """
+    else
+        """
+        pwd > reassemble_bins_workdir.txt
+        metawrap reassemble_bins_locked_phred -b ${bin_refinement_dir}/metawrap_50_5_bins/ -o ${sample_id}_reassemble_bins_outdir -1 $first_read -2 $second_read
+        shopt -s globstar
+        for f in **/*.{fa,stats}
+        do
+        file_name=\$(basename \$f)
+        mv \$f ./${sample_id}_\${file_name}
+        done
+        """
 }

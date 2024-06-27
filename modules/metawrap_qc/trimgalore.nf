@@ -4,7 +4,7 @@ process TRIMGALORE {
     label 'mem_1'
     label 'time_1'
 
-    container '/software/pathogen/images/trimgalore-v0.4.4.simg'
+    container 'quay.io/sangerpathogens/trimgalore:v0.4.4'
 
     input:
     tuple val(sample_id), path(first_read), path(second_read)

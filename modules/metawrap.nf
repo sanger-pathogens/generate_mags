@@ -6,12 +6,15 @@ process ASSEMBLY {
 
     container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-phred_locked-c3'
 
+    publishDir enabled: params.keep_assembly, mode: 'copy', path: "${params.outdir}/${sample_id}_saved_raw_assemblies/", pattern: "${sample_id}*.{fa,fasta,gfa}"
+
     input:
     tuple val(sample_id), file(first_read), file(second_read)
 
     output:
     tuple val(sample_id), path(first_read), path(second_read), emit: fastq_path_ch
     path(assembly_file), emit: assembly_ch
+    path("*fa*"), optional: true
 
     // dummy process for testing publishDir directives
     stub:
@@ -23,36 +26,22 @@ process ASSEMBLY {
     script:
     assembly_file="final_assembly.fasta"
 
-    if ( !params.lock_phred )
-        """
-        cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
-        if $params.keep_assembly_files && $params.fastspades
-        then
-            cmd="\${cmd} --fastspades --keepfiles"
-        elif $params.fastspades
-        then
-            cmd="\${cmd} --fastspades"
-        elif $params.keep_assembly_files
-        then
-            cmd="\${cmd} --keepfiles"
-        fi
-        eval "\${cmd}"
-        """
-    else
-        """
-        cmd="metawrap assembly_locked_phred -1 $first_read -2 $second_read -o ."
-        if $params.keep_assembly_files && $params.fastspades
-        then
-            cmd="\${cmd} --fastspades --keepfiles"
-        elif $params.fastspades
-        then
-            cmd="\${cmd} --fastspades"
-        elif $params.keep_assembly_files
-        then
-            cmd="\${cmd} --keepfiles"
-        fi
-        eval "\${cmd}"
-        """
+    def baseCmd = params.lock_phred ? 'metawrap assembly_locked_phred' : 'metawrap assembly'
+    def fastspades = params.fastspades ? '--fastspades' : ''
+    def keepfiles = params.keep_assembly ? '--keepfiles' : ''
+
+
+    """
+    ${baseCmd} -1 ${first_read} -2 ${second_read} -o . ${fastspades} ${keepfiles}
+
+    # Move file if keepfiles is specified
+    if [ "${params.keep_assembly}" = "true" ]; then
+        mv megahit/final.contigs.fa ${sample_id}_megahit_final.contigs.fa
+        mv metaspades/contigs.fasta ${sample_id}_metaspades_contigs.fasta
+        mv metaspades/assembly_graph_with_scaffolds.gfa ${sample_id}_assembly_graph_with_scaffolds.gfa
+        mv metaspades/scaffolds.fasta ${sample_id}_scaffolds.fasta
+    fi
+    """
 }
 
 process BINNING {

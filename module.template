@@ -1,0 +1,34 @@
+#%Module1.0#####################################################################
+##
+## Parasites and Microbes generate_mags {{version}}
+##
+
+# help setup
+proc ModulesHelp { } {
+  global version modroot
+
+  puts stderr "Custom deployment managed by pathogen informatics: {{path}}"
+  puts stderr "Executables:"
+  puts stderr "\tgenerate_mags"
+  puts stderr "Home page: {{repo_url}}"
+}
+
+# Whatis setup
+module-whatis "Custom deployment managed by pathogen informatics: {{path}}"
+module-whatis "Executables:"
+module-whatis "generate_mags"
+
+# Load prerequisite modules
+module load nextflow
+module load ISG/singularity
+
+# Load message
+if { [ module-info mode load ] } {
+    puts stderr "\tModule loaded. For more information run 'module help generate_mags/{{version}}' or check https://ssg-confluence.internal.sanger.ac.uk/display/PaMI/Generate+MAGs+Nextflow+pipeline."
+}
+
+# Conflicts
+conflict generate_mags
+
+# Add wrappers to PATH
+prepend-path PATH "{{path}}/generate_mags"

@@ -23,10 +23,10 @@ Options:
 
 If your data is stored in the PaM informatics pipeline system, you can use the following method:
 
-`./generate_manifest_from_lanes.sh -l <lanes_file>`
+`./scripts/generate_generate_mags_manifest_from_lanes.sh -l <lanes_file>`
 
 For more information, run:
-`./generate_manifest_from_lanes.sh -h`
+`./scripts/generate_generate_mags_manifest_from_lanes.sh -h`
 
 If your data is not stored in the PaM informatics pipeline system, use the following method:
 ### Step 1:
@@ -34,7 +34,7 @@ Obtain fastq paths:
 `ls -d -1 <path>/*.fastq.gz > fastq_paths.txt`
 ### Step 2:
 Generate manifest:
-`./generate_manifest.sh fastq_paths.txt`
+`./scripts/generate_generate_mags_manifest.sh fastq_paths.txt`
 
 This will output the manifest to `manifest.csv` which can be fed into the nextflow pipeline
 

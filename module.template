@@ -24,7 +24,7 @@ module load ISG/singularity
 
 # Load message
 if { [ module-info mode load ] } {
-    puts stderr "\tModule loaded. For more information run 'module help generate_mags/{{version}}' or check https://https://ssg-confluence.internal.sanger.ac.uk/display/PaMI/Generate+MAGs+Nextflow+pipeline."
+    puts stderr "\tModule loaded. For more information run 'module help generate_mags/{{version}}' or check https://ssg-confluence.internal.sanger.ac.uk/display/PaMI/Generate+MAGs+Nextflow+pipeline."
 }
 
 # Conflicts

@@ -15,12 +15,15 @@ process BMTAGGER {
 
     script:
     bmtagger_list="${sample_id}.bmtagger.list"
+    bitmask_file="${params.bmtagger_db}/${params.bmtagger_host}.bitmask"
+    srprism_prefix="${params.bmtagger_db}/${params.bmtagger_host}.srprism"
     """
     # make tmp folder for bmtagger
     mkdir bmtagger_tmp
+
     # run bmtagger
-    bmtagger.sh -b ${params.bmtagger_db}/${params.bmtagger_host}.bitmask -x ${params.bmtagger_db}/${params.bmtagger_host}.srprism -T bmtagger_tmp -q1 \\
-	 -1 ${first_read} -2 ${second_read} \\
-	 -o ${sample_id}.bmtagger.list
+    bmtagger.sh -b ${bitmask_file} -x ${srprism_prefix} -T bmtagger_tmp -q1 \\
+	-1 ${first_read} -2 ${second_read} \\
+	-o ${bmtagger_list}
     """
 }

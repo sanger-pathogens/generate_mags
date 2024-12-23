@@ -21,18 +21,19 @@ process ASSEMBLY {
     """
 
     script:
-    assembly_file="final_assembly.fasta"
+    out_dir="tmp_${sample_id}"
+    assembly_file="${out_dir}/final_assembly.fasta"
 
     if ( !params.lock_phred )
         """
-        cmd="metawrap assembly -1 $first_read -2 $second_read -o ."
-        if $params.keep_assembly_files && $params.fastspades
+        cmd="metawrap assembly -1 ${first_read} -2 ${second_read} -o ${out_dir}"
+        if ${params.keep_assembly_files} && ${params.fastspades}
         then
             cmd="\${cmd} --fastspades --keepfiles"
-        elif $params.fastspades
+        elif ${params.fastspades}
         then
             cmd="\${cmd} --fastspades"
-        elif $params.keep_assembly_files
+        elif ${params.keep_assembly_files}
         then
             cmd="\${cmd} --keepfiles"
         fi
@@ -40,14 +41,14 @@ process ASSEMBLY {
         """
     else
         """
-        cmd="metawrap assembly_locked_phred -1 $first_read -2 $second_read -o ."
-        if $params.keep_assembly_files && $params.fastspades
+        cmd="metawrap assembly_locked_phred -1 ${first_read} -2 ${second_read} -o ${out_dir}"
+        if ${params.keep_assembly_files} && ${params.fastspades}
         then
             cmd="\${cmd} --fastspades --keepfiles"
-        elif $params.fastspades
+        elif ${params.fastspades}
         then
             cmd="\${cmd} --fastspades"
-        elif $params.keep_assembly_files
+        elif ${params.keep_assembly_files}
         then
             cmd="\${cmd} --keepfiles"
         fi
@@ -93,7 +94,7 @@ process BINNING {
     assembly_file="final_assembly.fasta"
     """
     pwd > binning_workdir.txt
-    metawrap binning -a $assembly_file -o binning $first_read $second_read
+    metawrap binning -a ${assembly_file} -o binning ${first_read} ${second_read}
     """
 }
 
@@ -135,9 +136,9 @@ process BIN_REFINEMENT {
     touch ${sample_id}_bin_refinement_outdir/metawrap_50_5_bins/bleh.stats
 
     # if we are publishing results, collect fasta and stats files whilst renaming
-    if  $params.skip_reassembly
+    if  ${params.skip_reassembly}
     then
-       if [ "$params.keep_allbins" == "false" ]
+       if [ "${params.keep_allbins}" == "false" ]
        then
            shopt -s globstar
            for f in **/*.{fa,stats}
@@ -153,15 +154,15 @@ process BIN_REFINEMENT {
     workdir="bin_refinement_workdir.txt"
     """
     pwd > bin_refinement_workdir.txt
-    if $params.keep_allbins
+    if ${params.keep_allbins}
     then
         metawrap bin_refinement --keep_allbins -o ${sample_id}_bin_refinement_outdir -A ${binning_dir}/metabat2_bins/ -B ${binning_dir}/maxbin2_bins/ -C ${binning_dir}/concoct_bins/
     else
         metawrap bin_refinement -o ${sample_id}_bin_refinement_outdir -A ${binning_dir}/metabat2_bins/ -B ${binning_dir}/maxbin2_bins/ -C ${binning_dir}/concoct_bins/
     fi
-    if  $params.skip_reassembly
+    if  ${params.skip_reassembly}
     then
-       if [ "$params.keep_allbins" == "false" ]
+       if [ "${params.keep_allbins}" == "false" ]
        then
            shopt -s globstar
            for f in **/*.{fa,stats}

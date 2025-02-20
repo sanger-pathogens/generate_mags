@@ -41,23 +41,15 @@ if (params.help) {
 //
 // MODULES
 //
-include { validate_parameters } from './modules/helper_functions.nf'
 include { ASSEMBLY; BINNING; BIN_REFINEMENT; REASSEMBLE_BINS } from './modules/metawrap.nf'
 include { CLEANUP_ASSEMBLY; CLEANUP_BINNING; CLEANUP_BIN_REFINEMENT; CLEANUP_REFINEMENT_REASSEMBLY;
           CLEANUP_TRIMMED_FASTQ_FILES } from './modules/cleanup/cleanup.nf'
 
+include { MIXED_INPUT       } from './assorted-sub-workflows/mixed_input/mixed_input.nf' // Add a symlink to assorted sub workflows
 //
 // SUBWORKFLOWS
 //
 include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
-
-/*
-========================================================================================
-    VALIDATE INPUTS
-========================================================================================
-*/
-
-validate_parameters()
 
 /*
 ========================================================================================
@@ -66,14 +58,18 @@ validate_parameters()
 */
 
 workflow {
-    manifest_ch = Channel.fromPath(params.manifest, checkIfExists: true)
-    fastq_path_ch = manifest_ch.splitCsv(header: true, sep: ',')
-            .map{ row -> tuple(row.ID, file(row.R1), file(row.R2)) }
+    // manifest_ch = Channel.fromPath(params.manifest, checkIfExists: true)     # To delete
+    // fastq_path_ch = manifest_ch.splitCsv(header: true, sep: ',')     # To delete
+    //         .map{ row -> tuple(row.ID, file(row.R1), file(row.R2)) }     # To delete
 
+    MIXED_INPUT
+    | map { meta, R1, R2 -> tuple(meta.ID, R1, R2)}
+    | set{reads_ch}
+    
     if (params.skip_qc) {
-        ASSEMBLY(fastq_path_ch)
+        ASSEMBLY(reads_ch)
     } else {
-        METAWRAP_QC(fastq_path_ch)
+        METAWRAP_QC(reads_ch)
         ASSEMBLY(METAWRAP_QC.out.filtered_reads)
     }
 

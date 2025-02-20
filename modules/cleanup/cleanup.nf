@@ -32,24 +32,6 @@ process CLEANUP_TRIMMED_FASTQ_FILES {
         """
 }
 
-process CLEANUP_INSTRAIN_OUTPUT {
-    /**
-    * Cleanup unused output
-    */
-
-    input:
-         path(workdir)
-         val(sample_id)
-
-    script:
-        """
-        # Remove instrain results
-        instrain_dir=\$(cat $workdir)
-        cd \$instrain_dir
-        rm -rf $sample_id*
-        """
-}
-
 process CLEANUP_ASSEMBLY {
     /**
     * Cleanup assembly files
@@ -73,7 +55,6 @@ process CLEANUP_BINNING {
 
     input:
          path(workdir)
-         path(bin_refinement_dir)
 
     script:
         """

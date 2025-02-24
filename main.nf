@@ -60,9 +60,6 @@ include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
 */
 
 workflow {
-    // manifest_ch = Channel.fromPath(params.manifest, checkIfExists: true)     # To delete
-    // fastq_path_ch = manifest_ch.splitCsv(header: true, sep: ',')     # To delete
-    //         .map{ row -> tuple(row.ID, file(row.R1), file(row.R2)) }     # To delete
 
     MIXED_INPUT
     | map { meta, R1, R2 -> tuple(meta.ID, R1, R2)}

@@ -6,17 +6,17 @@ Usage:
     nextflow run main.nf
 
 Options:
-    --manifest                   Manifest containing paths to fastq files with headers ID,R1,R2. (mandatory)
-    --skip_qc                    Skip metawrap qc step. [default: false] (optional)
-    --keep_allbins               Keep allbins option for bin refinement.. [default: false] (optional)
-    --keep_assembly              Don't cleanup assembly files. [default: false] (optional)
-    --keep_binning               Don't cleanup binning files. [default: false] (optional)
-    --keep_bin_refinement        Don't cleanup bin refinement files. [default: false] (optional)
-    --keep_reassembly            Don't cleanup reassembly files. [default: false] (optional)
-    --keep_metawrap_qc           Don't cleanup metawrap qc files. [default: false] (optional)
-    --skip_reassembly            Skip reassembly step. [default: false] (optional)
-    --fastspades                 Use fastspades assembly option. [default: false] (optional)
-    --help                       Print this help message. (optional)
+    --manifest_of_reads / --manifest    Manifest containing paths to fastq files with headers ID,R1,R2. (mandatory)
+    --skip_qc                           Skip metawrap qc step. [default: false] (optional)
+    --keep_allbins                      Keep allbins option for bin refinement.. [default: false] (optional)
+    --keep_assembly                     Don't cleanup assembly files. [default: false] (optional)
+    --keep_binning                      Don't cleanup binning files. [default: false] (optional)
+    --keep_bin_refinement               Don't cleanup bin refinement files. [default: false] (optional)
+    --keep_reassembly                   Don't cleanup reassembly files. [default: false] (optional)
+    --keep_metawrap_qc                  Don't cleanup metawrap qc files. [default: false] (optional)
+    --skip_reassembly                   Skip reassembly step. [default: false] (optional)
+    --fastspades                        Use fastspades assembly option. [default: false] (optional)
+    --help                              Print this help message. (optional)
 ```
 
 ## Generating manifests

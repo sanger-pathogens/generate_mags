@@ -23,6 +23,17 @@ Options:
 
 ## Generating manifests
 
+### On Wellcome Sanger Institute "farm" HPC
+
+It is recommended to use the dedicated the farm module `manifest_generator`:
+
+```
+module load manifest_generator
+generate_manifest.py -h # for script usage
+```
+
+Alternatively, you can use the scripts bundled with this repository (deprecated).
+
 If your data is stored in the PaM informatics pipeline system, you can use the following method:
 
 `./generate_manifest_from_lanes.sh -l <lanes_file>`

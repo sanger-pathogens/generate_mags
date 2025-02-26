@@ -36,24 +36,36 @@ Alternatively, you can use the scripts bundled with this repository (deprecated)
 
 If your data is stored in the PaM informatics pipeline system, you can use the following method:
 
-`./generate_manifest_from_lanes.sh -l <lanes_file>`
+```
+./generate_manifest_from_lanes.sh -l <lanes_file>`
+```
 
 For more information, run:
-`./generate_manifest_from_lanes.sh -h`
+```
+./generate_manifest_from_lanes.sh -h`
+```
 
 If your data is not stored in the PaM informatics pipeline system, use the following method:
 ### Step 1:
 Obtain fastq paths:
-`ls -d -1 <path>/*.fastq.gz > fastq_paths.txt`
+```
+ls -d -1 <path>/*.fastq.gz > fastq_paths.txt`
+```
+
 ### Step 2:
+
 Generate manifest:
-`./generate_manifest.sh fastq_paths.txt`
+```
+./generate_manifest.sh fastq_paths.txt`
+```
 
 This will output the manifest to `manifest.csv` which can be fed into the nextflow pipeline
 
 ## Dependencies
-This pipeline relies on the following modules:
+This pipeline relies on the Nextflow and Singularity.
+
+On the Sanger farm, these software dependencies can be accessed through loading the following modules:
 ```
-ISG/singularity/3.6.4
-nextflow/22.10.6-5843
+nextflow/24.10.4
+ISG/singularity/3.11.4
 ```

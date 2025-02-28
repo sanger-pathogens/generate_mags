@@ -63,9 +63,9 @@ process BINNING {
     tuple val(sample_id), file(first_read), file(second_read), emit: fastq_path_ch
     path("${workdir}"), emit: workdir
     path("${assembly_file}"), emit: assembly_ch
-    path("metabat2_bins"), emit: metabat2_bins
-    path("maxbin2_bins"), emit: maxbin2_bins
-    path("concoct_bins"), emit: concoct_bins
+    path("binning/metabat2_bins"), emit: metabat2_bins
+    path("binning/maxbin2_bins"), emit: maxbin2_bins
+    path("binning/concoct_bins"), emit: concoct_bins
 
     // dummy process for testing publishDir directives
     stub:

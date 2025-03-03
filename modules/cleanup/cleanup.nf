@@ -70,11 +70,12 @@ process CLEANUP_BIN_REFINEMENT {
     */
 
     input:
-         path(workdir)
+         path(refinement_dir)
+         path(binning_workdir)
 
     script:
         """
-        bin_refinement_dir=\$(cat $workdir)
+        bin_refinement_dir=\$(cat $refinement_dir)
         cd \$bin_refinement_dir
         rm -rf *_bin_refinement*
         """

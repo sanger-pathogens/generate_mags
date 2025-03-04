@@ -54,11 +54,12 @@ process CLEANUP_BINNING {
     */
 
     input:
-         path(workdir)
+         path(binning_workdir)
+         path(refinement_dir) // create dependency only to prevent file deletion before they're used by downstream REASSEMBLY process
 
     script:
         """
-        binning_dir=\$(cat $workdir)
+        binning_dir=\$(cat $binning_workdir)
         cd \$binning_dir
         rm -rf binning
         """
@@ -71,8 +72,7 @@ process CLEANUP_BIN_REFINEMENT {
 
     input:
          path(refinement_dir)
-         path(binning_workdir)
-
+    
     script:
         """
         bin_refinement_dir=\$(cat $refinement_dir)

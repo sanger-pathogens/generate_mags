@@ -102,7 +102,7 @@ workflow {
     }
 
     if (params.cleanup_binning) {
-        CLEANUP_BINNING(BINNING.out.workdir)
+        CLEANUP_BINNING(BINNING.out.workdir, BIN_REFINEMENT.out.workdir)
     }
 
     if (params.cleanup_bin_refinement) {

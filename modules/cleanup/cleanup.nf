@@ -55,7 +55,7 @@ process CLEANUP_BINNING {
 
     input:
          path(binning_workdir)
-         path(refinement_dir) // create dependency only to prevent file deletion before they're used by downstream REASSEMBLY process
+         path(refinement_dir) // create dependency only to prevent file deletion before they're used by downstream BIN_REFINEMENT process
 
     script:
         """
@@ -72,6 +72,7 @@ process CLEANUP_BIN_REFINEMENT {
 
     input:
          path(refinement_dir)
+         path(reassembly_dir) // create dependency only to prevent file deletion before they're used by downstream REASSEMBLE_BINS process
     
     script:
         """

@@ -106,7 +106,7 @@ workflow {
     }
 
     if (params.cleanup_bin_refinement) {
-         CLEANUP_BIN_REFINEMENT(BIN_REFINEMENT.out.workdir)
+         CLEANUP_BIN_REFINEMENT(BIN_REFINEMENT.out.workdir, REASSEMBLE_BINS.out.workdir)
     }
 
     if (params.cleanup_reassembly && !params.skip_reassembly) {

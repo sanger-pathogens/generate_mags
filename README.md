@@ -50,10 +50,7 @@ If your data is not stored in the PaM informatics pipeline system, use the follo
 ### Step 1:
 
 Obtain fastq paths:
-
-```
-ls -d -1 <path>/*.fastq.gz > fastq_paths.txt
-```
+`ls -d -1 <path>/*.fastq.gz > fastq_paths.txt`
 
 ### Step 2:
 
@@ -67,11 +64,9 @@ This will output the manifest to `manifest.csv` which can be fed into the nextfl
 
 ## Dependencies
 
-This pipeline relies on the Nextflow and Singularity.
-
-On the Sanger farm, these software dependencies can be accessed through loading the following modules:
+This pipeline relies on the following modules:
 
 ```
-nextflow/24.10.4
-ISG/singularity/3.11.4
+ISG/singularity/3.6.4
+nextflow/22.10.6-5843
 ```

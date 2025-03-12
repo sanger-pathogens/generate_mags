@@ -1,6 +1,3 @@
-[submodule "assorted sub workflows"]
-	path = assorted sub workflows
-	url = git@gitlab.internal.sanger.ac.uk:sanger-pathogens/pipelines/assorted-sub-workflows.git
 [submodule "assorted-sub-workflows"]
 	path = assorted-sub-workflows
 	url = git@gitlab.internal.sanger.ac.uk:sanger-pathogens/pipelines/assorted-sub-workflows.git

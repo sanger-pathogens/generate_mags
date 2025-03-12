@@ -7,26 +7,10 @@
 */
 
 def printHelp() {
-    log.info """
-    Usage:
-        nextflow run main.nf
-
-    Options:
-        --manifest                   Manifest containing paths to fastq files with headers ID,R1,R2. (mandatory)
-        --outdir                     Directory to store pipeline output. [default: ./results] (optional)
-        --skip_qc                    Skip metawrap qc step. [default: false] (optional)
-        --keep_allbins               Keep all bins from bin refinement, instead of best one only. [default: false] (optional)
-        --keep_assembly              Save initial SPAdes assembly files. [default: false] (optional)
-        --keep_binning               Save first-pass binning files. [default: false] (optional)
-        --cleanup_assembly           Cleanup assembly files from work/ subfolders. [default: true] (optional)
-        --cleanup_binning            Cleanup binning files from work/ subfolders. [default: true] (optional)
-        --cleanup_bin_refinement     Cleanup bin refinement files from work/ subfolders. [default: true] (optional)
-        --cleanup_reassembly         Cleanup reassembly files from work/ subfolders. [default: true] (optional)
-        --cleanup_metawrap_qc        Cleanupp metawrap qc files from work/ subfolders. [default: true] (optional)
-        --skip_reassembly            Skip reassembly step. [default: false] (optional)
-        --fastspades                 Use fastspades assembly option. [default: false] (optional)
-        --help                       Print this help message. (optional)
-    """.stripIndent()
+    NextflowTool.help_message("${workflow.ProjectDir}/schema.json", 
+                              ["${workflow.ProjectDir}/assorted-sub-workflows/mixed_input/schema.json",
+                               "${workflow.ProjectDir}/assorted-sub-workflows/irods_extractor/schema.json"],
+    params.monochrome_logs, log)
 }
 
 if (params.help) {
@@ -59,8 +43,13 @@ include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
 ========================================================================================
 */
 
-workflow {
+def logo = NextflowTool.logo(workflow, params.monochrome_logs)
 
+log.info logo
+
+NextflowTool.commandLineParams(workflow.commandLine, log, params.monochrome_logs)
+
+workflow {
     MIXED_INPUT
     | map { meta, R1, R2 -> tuple(meta.ID, R1, R2)}
     | set{reads_ch}

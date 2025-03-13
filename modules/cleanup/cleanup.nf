@@ -32,24 +32,6 @@ process CLEANUP_TRIMMED_FASTQ_FILES {
         """
 }
 
-process CLEANUP_INSTRAIN_OUTPUT {
-    /**
-    * Cleanup unused output
-    */
-
-    input:
-         path(workdir)
-         val(sample_id)
-
-    script:
-        """
-        # Remove instrain results
-        instrain_dir=\$(cat $workdir)
-        cd \$instrain_dir
-        rm -rf $sample_id*
-        """
-}
-
 process CLEANUP_ASSEMBLY {
     /**
     * Cleanup assembly files
@@ -72,12 +54,12 @@ process CLEANUP_BINNING {
     */
 
     input:
-         path(workdir)
-         path(bin_refinement_dir)
+         path(binning_workdir)
+         path(refinement_dir) // create dependency only to prevent file deletion before they're used by downstream BIN_REFINEMENT process
 
     script:
         """
-        binning_dir=\$(cat $workdir)
+        binning_dir=\$(cat $binning_workdir)
         cd \$binning_dir
         rm -rf binning
         """
@@ -89,11 +71,12 @@ process CLEANUP_BIN_REFINEMENT {
     */
 
     input:
-         path(workdir)
-
+         path(refinement_dir)
+         path(reassembly_dir) // create dependency only to prevent file deletion before they're used by downstream REASSEMBLE_BINS process
+    
     script:
         """
-        bin_refinement_dir=\$(cat $workdir)
+        bin_refinement_dir=\$(cat $refinement_dir)
         cd \$bin_refinement_dir
         rm -rf *_bin_refinement*
         """

@@ -1,5 +1,5 @@
 process COLLATE_STATS {
-    tag "${sample_id}"
+    tag "all samples"
     label 'cpu_1'
     label 'mem_1'
     label 'time_1'

@@ -50,6 +50,8 @@ process BINNING {
     label 'mem_8'
     label 'time_queue_from_normal'
 
+    publishDir enabled: params.keep_binning, mode: 'copy', path: "${params.outdir}/${sample_id}_saved_raw_bins/", pattern: "*_bins"
+
     container 'quay.io/sangerpathogens/metawrap_custom:1.3.2-phred_locked-c3'
 
     input:
@@ -61,6 +63,9 @@ process BINNING {
     tuple val(sample_id), file(first_read), file(second_read), emit: fastq_path_ch
     path("${workdir}"), emit: workdir
     path("${assembly_file}"), emit: assembly_ch
+    path("binning/metabat2_bins"), emit: metabat2_bins, optional: true
+    path("binning/maxbin2_bins"), emit: maxbin2_bins, optional: true
+    path("binning/concoct_bins"), emit: concoct_bins, optional: true
 
     // dummy process for testing publishDir directives
     stub:

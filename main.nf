@@ -27,15 +27,21 @@ if (params.help) {
 //
 // MODULES
 //
-include { ASSEMBLY; BINNING; BIN_REFINEMENT; REASSEMBLE_BINS } from './modules/metawrap.nf'
-include { CLEANUP_ASSEMBLY; CLEANUP_BINNING; CLEANUP_BIN_REFINEMENT; CLEANUP_REFINEMENT_REASSEMBLY;
-          CLEANUP_TRIMMED_FASTQ_FILES } from './modules/cleanup/cleanup.nf'
+include { ASSEMBLY; 
+          BINNING;
+          BIN_REFINEMENT;
+          REASSEMBLE_BINS                } from './modules/metawrap.nf'
+include { CLEANUP_ASSEMBLY; 
+          CLEANUP_BINNING; 
+          CLEANUP_BIN_REFINEMENT; 
+          CLEANUP_REFINEMENT_REASSEMBLY;
+          CLEANUP_TRIMMED_FASTQ_FILES    } from './modules/cleanup/cleanup.nf'
 
-include { MIXED_INPUT       } from './assorted-sub-workflows/mixed_input/mixed_input.nf' // Add a symlink to assorted sub workflows
+include { MIXED_INPUT                    } from './assorted-sub-workflows/mixed_input/mixed_input.nf'
 //
 // SUBWORKFLOWS
 //
-include { METAWRAP_QC } from './subworkflows/metawrap_qc.nf'
+include { METAWRAP_QC                    } from './subworkflows/metawrap_qc.nf'
 
 /*
 ========================================================================================

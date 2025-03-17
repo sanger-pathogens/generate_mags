@@ -1,66 +1,66 @@
 {
-    "pipeline": "Generate mags",
-    "params": {
-        "General Options": {
-            "manifest": {
-                "default": "",
-                "help_text": "Manifest containing paths to fastq files with headers ID,R1,R2. (mandatory)"
-            },
-            "outdir": {
-                "default": "./results",
-                "help_text": "Directory to store pipeline output."
-            }
-        },
-        "Quality Control Options": {
-            "skip_qc": {
-                "default": "false",
-                "help_text": "Skip metawrap QC step. (optional)"
-            },
-            "keep_metawrap_qc": {
-                "default": "false",
-                "help_text": "Don't cleanup metawrap QC files. (optional)"
-            }
-        },
-        "Binning and Assembly Options": {
-            "keep_allbins": {
-                "default": "false",
-                "help_text": "Keep allbins option for bin refinement. (optional)"
-            },
-            "keep_assembly": {
-                "default": "false",
-                "help_text": "Don't cleanup assembly files. (optional)"
-            },
-            "keep_binning": {
-                "default": "false",
-                "help_text": "Don't cleanup binning files. (optional)"
-            },
-            "keep_bin_refinement": {
-                "default": "false",
-                "help_text": "Don't cleanup bin refinement files. (optional)"
-            }
-        },
-        "Reassembly Options": {
-            "keep_reassembly": {
-                "default": "false",
-                "help_text": "Don't cleanup reassembly files. (optional)"
-            },
-            "skip_reassembly": {
-                "default": "false",
-                "help_text": "Skip reassembly step. (optional)"
-            }
-        },
-        "Additional Options": {
-            "fastspades": {
-                "default": "false",
-                "help_text": "Use fastspades assembly option. (optional)"
-            },
-            "help": {
-                "default": "false",
-                "help_text": "Print this help message. (optional)"
-            }
-        }
+  "pipeline": "Generate mags",
+  "params": {
+    "General Options": {
+      "manifest": {
+        "default": "",
+        "help_text": "Manifest containing paths to fastq files with headers ID,R1,R2. (mandatory)"
+      },
+      "outdir": {
+        "default": "./results",
+        "help_text": "Directory to store pipeline output."
+      }
     },
-    "overwrite_param": {
-        "none": {}
+    "Quality Control Options": {
+      "skip_qc": {
+        "default": "false",
+        "help_text": "Skip metawrap QC step. (optional)"
+      },
+      "keep_metawrap_qc": {
+        "default": "false",
+        "help_text": "Don't cleanup metawrap QC files. (optional)"
+      }
+    },
+    "Binning and Assembly Options": {
+      "keep_allbins": {
+        "default": "false",
+        "help_text": "Keep allbins option for bin refinement. (optional)"
+      },
+      "keep_assembly": {
+        "default": "false",
+        "help_text": "Don't cleanup assembly files. (optional)"
+      },
+      "keep_binning": {
+        "default": "false",
+        "help_text": "Don't cleanup binning files. (optional)"
+      },
+      "keep_bin_refinement": {
+        "default": "false",
+        "help_text": "Don't cleanup bin refinement files. (optional)"
+      }
+    },
+    "Reassembly Options": {
+      "keep_reassembly": {
+        "default": "false",
+        "help_text": "Don't cleanup reassembly files. (optional)"
+      },
+      "skip_reassembly": {
+        "default": "false",
+        "help_text": "Skip reassembly step. (optional)"
+      }
+    },
+    "Additional Options": {
+      "fastspades": {
+        "default": "false",
+        "help_text": "Use fastspades assembly option. (optional)"
+      },
+      "help": {
+        "default": "false",
+        "help_text": "Print this help message. (optional)"
+      }
     }
+  },
+  "overwrite_param": {
+    "none": {}
+  }
 }

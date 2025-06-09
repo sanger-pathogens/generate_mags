@@ -183,10 +183,9 @@ process REASSEMBLE_BINS {
     tuple val(sample_id), file(first_read), file(second_read)
 
     output:
-    path("*.fa")
+    path("*.fa"), emit: fastas
     path("*.stats")
     path("${workdir}"), emit: workdir
-    tuple val(sample_id), file(first_read), file(second_read), emit: fastq_path_ch
 
     // dummy process for testing publishDir directives
     stub:

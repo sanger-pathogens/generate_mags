@@ -1,5 +1,5 @@
 process GENERATE_STATS {
-    tag "${sample_id}"
+    tag "${meta.ID}"
     label 'cpu_1'
     label 'mem_1'
     label 'time_1'
@@ -7,13 +7,13 @@ process GENERATE_STATS {
     container 'quay.io/sangerpathogens/metawrap_qc_python:1.0'
 
     input:
-    tuple val(sample_id), path(trimmed_read_1), path(trimmed_read_2), path(clean_read_1), path(clean_read_2), path(host_read_1), path(host_read_2), path(original_read_1), path(original_read_2)
+    tuple val(meta), path(trimmed_read_1), path(trimmed_read_2), path(clean_read_1), path(clean_read_2), path(host_read_1), path(host_read_2), path(original_read_1), path(original_read_2)
 
     output:
     path(stats_file), emit: stats_ch
 
     script:
-    stats_file="${sample_id}_stats.csv"
+    stats_file="${meta.ID}_stats.csv"
     """
     # get read numbers (bash quickest way)
     trimmed_1_reads=\$((`cat $trimmed_read_1 | wc -l` / 4))
@@ -30,6 +30,6 @@ process GENERATE_STATS {
     original_reads_total=\$((\${original_1_reads} + \${original_2_reads}))
 
     # generate stats
-    generate_stats.py --sample-id ${sample_id} --host-reads \${host_reads_total} --non-host-reads \${clean_reads_total} --total-trimmed-reads \${trimmed_reads_total} --total-original-reads \${original_reads_total} > ${sample_id}_stats.csv
+    generate_stats.py --sample-id ${meta.ID} --host-reads \${host_reads_total} --non-host-reads \${clean_reads_total} --total-trimmed-reads \${trimmed_reads_total} --total-original-reads \${original_reads_total} > ${meta.ID}_stats.csv
     """
 }

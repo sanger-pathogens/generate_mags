@@ -43,6 +43,10 @@ include { MIXED_INPUT                    } from './assorted-sub-workflows/mixed_
 //
 include { METAWRAP_QC                    } from './subworkflows/metawrap_qc.nf'
 
+include { REMOVE_HUMAN                   } from './subworkflows/human_read_removal.nf'
+include { METAWRAP_ASSEMBLE              } from './subworkflows/metawrap_assembly.nf'
+include { METAWRAP_BINNING               } from './subworkflows/metawrap_assembly.nf'
+
 /*
 ========================================================================================
     RUN MAIN WORKFLOW
@@ -57,17 +61,45 @@ NextflowTool.commandLineParams(workflow.commandLine, log, params.monochrome_logs
 
 workflow {
     MIXED_INPUT
-    | map { meta, R1, R2 -> tuple(meta.ID, R1, R2)}
     | set{reads_ch}
     
-    if (params.skip_qc) {
-        ASSEMBLY(reads_ch)
-    } else {
+    switch (params.qc) {
+        case "scrubber":
+        REMOVE_HUMAN(reads_ch)
+        | set { ready_reads }
+
+        break
+    
+    case "metawrap":
         METAWRAP_QC(reads_ch)
-        ASSEMBLY(METAWRAP_QC.out.filtered_reads)
+        | set { ready_reads }
+
+        break
+
+    case "skip":
+        reads_ch
+        | set { ready_reads }
+
+        break
+    
+    default:
+        log.error("input --qc: ${params.qc} was not one of scrubber|metawrap|skip")
+
     }
 
-    BINNING(ASSEMBLY.out.fastq_path_ch, ASSEMBLY.out.assembly_ch)
+    if (params.split_process) {
+        METAWRAP_ASSEMBLE(ready_reads)
+        | set { contigs }
+
+        METAWRAP_BINNING(contigs, ready_reads)
+    } else {
+        ASSEMBLY(ready_reads)
+
+        ASSEMBLY.out.assembly_ch
+        | set { contigs }
+
+        BINNING(contigs, ready_reads)
+    }
     
     if (params.skip_reassembly) {
         BIN_REFINEMENT(BINNING.out.binning_ch, BINNING.out.fastq_path_ch)
@@ -77,7 +109,7 @@ workflow {
     }
 
     // cleanup
-    if (params.cleanup_metawrap_qc && !params.skip_qc) {
+    if (params.cleanup_metawrap_qc && !params.qc == "skip") {
         if (params.skip_reassembly){
             CLEANUP_TRIMMED_FASTQ_FILES(BIN_REFINEMENT.out.fastq_path_ch)
         } else {

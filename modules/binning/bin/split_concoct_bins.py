@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 # Takes in the clustering_gt1000.csv file from CONCOCT binning, and splits the contigs into proper bins
 # Usage:
 # ./script clustering_gt1000.csv assembly_file.fa out_folder

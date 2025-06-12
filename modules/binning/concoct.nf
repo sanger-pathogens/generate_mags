@@ -108,5 +108,8 @@ process SPLIT_BINS {
     mkdir concoct_bins
 
     ${command} ${merged_csv} ${contigs} concoct_bins
+
+    # move stuff out of the bin that isn't to use
+    mv concoct_bins/unbinned.fa .
     """
 }

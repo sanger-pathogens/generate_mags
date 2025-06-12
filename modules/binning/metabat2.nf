@@ -53,13 +53,13 @@ process METABAT2 {
     tuple val(meta), path(depth_text), path(assembly)
 
     output:
-    tuple val(meta), path("${meta.ID}_bin"),  emit: depth
+    tuple val(meta), path("metabat/"),  emit: depth
 
     script:
     """
     metabat2 -i ${assembly} \\
         -a ${depth_text} \\
-        -o ${meta.ID}_bin \\
+        -o metabat/${meta.ID}_bin \\
         -m ${params.min_contig} \\
         -t ${task.cpus} \\
         --unbinned

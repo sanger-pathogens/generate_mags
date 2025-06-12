@@ -1,16 +1,18 @@
 include { BWA_INDEX;
-          BWA                     } from "${projectDir}/assorted-sub-workflows/strain_mapper/modules/bwa.nf"
+          BWA                     } from '../modules/assemble/bwa.nf'
 include { SORT_BAM; 
-          INDEX                   } from '../modules/assemble/samtools.nf'
+          INDEX                   } from '../modules/binning/samtools.nf'
 include { CONTIG_DEPTHS;
           METABAT1; 
-          METABAT2                } from '../modules/assemble/metabat2.nf'
+          METABAT2                } from '../modules/binning/metabat2.nf'
 include { CONTIG_DEPTHS_NO_INTRA; 
           SPLIT_DEPTHS; 
-          MAXBIN2                 } from '../modules/assemble/maxbin2.nf'
+          MAXBIN2                 } from '../modules/binning/maxbin2.nf'
 include {CUT_UP_FASTA ;
          ESTIMATE_ABUNDANCE;
-         CONCOCT                  } from '../modules/assemble/concoct.nf'
+         CONCOCT;
+         CUTUP_CLUSTERING;
+         SPLIT_BINS               } from '../modules/binning/concoct.nf'
 
 /*
 ##############################################################################################################################################################
@@ -30,42 +32,81 @@ include {CUT_UP_FASTA ;
 ##############################################################################################################################################################
 */
 
+// Function to join multiple binning channels into a single one
+// that emits: [meta, [bin1, bin2, bin3]]
+def join_bins(List binning_channels) {
+    // Start with the first channel
+    def joined_channel = binning_channels[0]
+
+    // Iteratively join with the remaining channels
+    (1..<binning_channels.size()).each { index ->
+        def next_channel = binning_channels[index]
+
+        joined_channel = joined_channel.join(next_channel)
+            .map { tuple1, tuple2 ->
+                def meta = tuple1[0]  // shared metadata (e.g. sample ID)
+
+                // Get list of current bins from previous step
+                def bin_list = (tuple1[1] instanceof List) ? tuple1[1] : [tuple1[1]]
+
+                // Add the new bin to the list
+                def new_bin = tuple2[1]
+                return [meta, bin_list + [new_bin]]
+            }
+    }
+
+    return joined_channel
+}
+
 workflow METAWRAP_BINNING {
     take:
+    contigs
     reads
+
+    main:
+
+    BWA_INDEX(contigs)
+    | set { indexed_contigs }
+
+    reads.join(indexed_contigs)
+    | BWA
+    | SORT_BAM
+    | set { bam } 
+    
+    METABAT_WF(bam, contigs)
+    | set { metabat_bins }
+
+    MAXBIN_WF(bam, contigs)
+    | set { maxbins_bins }
+
+    CONCOCT_WF(bam, contigs)
+    | set { concoct_bins }
+
+    metabat_bins
+    | join(maxbins_bins)
+    | join(concoct_bins)
+    | set { final_bins }
+
+    emit:
+    final_bins
+}
+
+workflow METABAT_WF {
+    take:
+    bam
     contigs
 
     main:
 
-    BWA_INDEX(metaspades_contigs)
-    | set { indexed_contigs }
-
-    BWA(reads, indexed_contigs)
-    | SORT_BAM
-    | set { bam } 
-    
-    METABAT(bam, reads)
-
-    emit:
-    SORT_CONTIGS.out.sorted_contigs
-}
-
-workflow METABAT {
-    take:
-    bam
-    reads
-
-    main:
-
     CONTIG_DEPTHS(bam)
-    | join(reads)
-    | set { bam_and_reads }
+    | join(contigs)
+    | set { depth_file_and_contigs }
 
-    METABAT2(bam_and_reads)
-    | set ( bins )
+    METABAT2(depth_file_and_contigs)
+    | set { bins }
 
     if (params.metabat1) {
-        METABAT1(bam_and_reads)
+        METABAT1(depth_file_and_contigs)
         | join(bins)
         | set { final_bins }
     } else {
@@ -77,14 +118,15 @@ workflow METABAT {
     final_bins
 }
 
-workflow MAXBIN2 {
+workflow MAXBIN_WF {
     take:
     bam
-    reads
+    contigs
 
     main:
     CONTIG_DEPTHS_NO_INTRA(bam)
     | SPLIT_DEPTHS
+    | join(contigs)
     | MAXBIN2
     | set { bins }
 
@@ -92,7 +134,7 @@ workflow MAXBIN2 {
     bins
 }
 
-workflow CONCOCT {
+workflow CONCOCT_WF {
     take:
     bam
     assembly
@@ -103,12 +145,15 @@ workflow CONCOCT {
     CUT_UP_FASTA(assembly)
 
     CUT_UP_FASTA.out.bed
-    | join(INDEX.out.bam_plux_index)
+    | join(INDEX.out.bam_plus_index)
     | ESTIMATE_ABUNDANCE
 
     CUT_UP_FASTA.out.split_fasta
     | join(ESTIMATE_ABUNDANCE.out.depths)
     | CONCOCT
+    | CUTUP_CLUSTERING
+    | join(assembly)
+    | SPLIT_BINS
     | set { bins }
 
     emit:

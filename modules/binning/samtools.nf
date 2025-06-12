@@ -30,7 +30,7 @@ process INDEX {
     tuple val(meta), path(bam)
 
     output:
-    tuple val(meta), path(bam), path("*.bam.*") emit: bam_plus_index
+    tuple val(meta), path(bam), path("*.bam.*"), emit: bam_plus_index
 
     script:
     mapped_reads_bam = "${meta.ID}.bam"

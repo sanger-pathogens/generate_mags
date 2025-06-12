@@ -52,15 +52,15 @@ process SORT_CONTIGS {
     container 'quay.io/sangerpathogens/python-curl:3.11'
 
     input:
-    tuple val(meta), path(contigs)
+    tuple val(meta), path("${meta.ID}_long?.scaffolds")
 
     output:
-    tuple val(meta), path(sorted_contigs), emit: sorted_contigs
+    tuple val(meta), path(final_contigs), emit: sorted_contigs
 
     script:
     command = "${projectDir}/modules/assemble/bin/sort_contigs.py"
     final_contigs = "${meta.ID}.contigs"
     """
-    ${command} ${contigs} ${params.min_contig ? "--min-contig params.min_contig" : ""} > ${final_contigs}
+    ${command} *scaffolds ${params.min_contig ? "--min_contig ${params.min_contig}" : ""} > ${final_contigs}
     """
 }

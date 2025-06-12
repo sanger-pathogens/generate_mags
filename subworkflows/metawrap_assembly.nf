@@ -4,7 +4,7 @@ include { REMOVE_SMALL_CONTIGS;
           FIX_MEGAHIT_CONTIG_NAMING;
           SORT_CONTIGS               } from '../modules/assemble/helper_scripts.nf'
 include { BWA_INDEX;
-          FIND_UNMAPPED_BWA          } from '../modules/assemble/bwa.nf'
+          BWA                        } from '../modules/assemble/bwa.nf'
 include { SAM_TO_FASTQ               } from '../modules/assemble/samtools.nf'
 include { QUAST                      } from '../modules/assemble/quast.nf'
 
@@ -46,7 +46,7 @@ workflow METAWRAP_ASSEMBLE {
             | set { indexed_contigs }
 
             reads.join(indexed_contigs)
-            | FIND_UNMAPPED_BWA
+            | BWA
             | SAM_TO_FASTQ
             | set { final_reads_ch }
         }
@@ -63,6 +63,7 @@ workflow METAWRAP_ASSEMBLE {
 
     if (params.metaspades && params.megahit) {
         metaspades_contigs.join(megahit_contigs)
+        | map { meta, contig1, contig2 -> tuple(meta, [contig1, contig2])}
         | set { final_contigs }
         
     } else if (params.metaspades) {

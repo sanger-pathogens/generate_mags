@@ -1,4 +1,4 @@
-process FIND_UNMAPPED_BWA {
+process BWA {
     tag "${meta.ID}"
     label 'cpu_1'
     label 'mem_8'
@@ -10,13 +10,12 @@ process FIND_UNMAPPED_BWA {
     tuple val(meta), path(reads_1), path(reads_2), path(reference), path(bwa_index_files)
 
     output:
-    tuple val(meta), path(unmapped_reads),  emit: unmapped_reads
+    tuple val(meta), path(sam),  emit: sam
 
     script:
-    unmapped_reads = "${meta.ID}_unused.sam"
+    sam = "${meta.ID}_mapped.sam"
     """
-    # keep header and unmapped
-    bwa mem -M -a -t ${task.cpus}  ${reference} ${reads_1} ${reads_2} | awk '/^@/ || !/NM:i:/' > ${unmapped_reads}
+    bwa mem -t ${task.cpus}  ${reference} ${reads_1} ${reads_2} > ${sam}
     """
 }
 

@@ -22,7 +22,7 @@ process SPLIT_DEPTHS {
     tag "${meta.ID}"
     label 'cpu_1'
     label 'mem_1'
-    label 'time_1'
+    label 'time_30m'
 
     container 'quay.io/sangerpathogens/python-curl:3.11'
 
@@ -30,13 +30,13 @@ process SPLIT_DEPTHS {
     tuple val(meta), path(depth_text)
 
     output:
-    tuple val(meta), path(depth_file), emit: depths
+    tuple val(meta), path(depth_out), emit: depths
 
     script:
     command = "${projectDir}/modules/binning/bin/split_depths.py"
-    depth_file = "${meta.ID}_depths.txt"
+    depth_out = "${meta.ID}_split_depths"
     """
-    ${command} ${depth_text} ${depth_file}
+    ${command} ${depth_text} ${depth_out}
     """
 }
 
@@ -48,18 +48,20 @@ process MAXBIN2 {
     container 'quay.io/biocontainers/maxbin2:2.2.7--h503566f_7'
 
     input:
-    tuple val(meta), path(depth_text), path(assembly)
+    tuple val(meta), path(depth_dir), path(assembly)
 
     output:
     tuple val(meta), path("maxbin2_out/"),  emit: bins
 
     script:
     """
+    mkdir maxbin2_out
+
     run_MaxBin.pl -contig ${assembly} \\
         -markerset ${params.maxbin_markers} \\
         -thread ${task.cpus} \\
         -min_contig_length ${params.min_contig} \\
-	    -out maxbin2_out/ \\
-	    -abund_list ${depth_text}
+	    -out maxbin2_out/${meta.ID} \\
+	    -abund_list ${depth_dir}/mb2_abund_list.txt
     """
 }

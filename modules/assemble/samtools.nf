@@ -9,17 +9,26 @@ process SAM_TO_FASTQ {
     tuple val(meta), path(sam)
 
     output:
-    tuple val(meta), path(read1), path(read2), emit: fastq_ch
+    tuple val(meta), path("${read1}.gz"), path("${read2}.gz"), emit: fastq_ch
 
     script:
-    read1 = "${meta.ID}_1.fastq.gz"
-    read2 = "${meta.ID}_2.fastq.gz"
+    read1 = "${meta.ID}_1.fastq"
+    read2 = "${meta.ID}_2.fastq"
+
+    //-f 12 = both reads unmapped
+    //-F 256 no secondary alignments
     """
+    samtools view -b \\
+        -f 12 \\
+        -F 256 \\
+        -@ ${task.cpus} \\
+        ${sam} | \\
     samtools fastq -N \\
-        -f ${sam} \\
         -1 ${read1} \\
         -2 ${read2} \\
         -@ ${task.cpus} \\
-        ${sam}
+        -
+
+    gzip ${read1} ${read2}
     """
 }

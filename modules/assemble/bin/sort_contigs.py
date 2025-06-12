@@ -26,7 +26,7 @@ def parse_fasta(filepath):
 
     return contigs
 
-def combine_fastas(fasta_files, min_contig=0):
+def combine_fastas(fasta_files, min_contig):
     """Combines multiple FASTA files, filters by min_contig."""
     combined = {}
     for file in fasta_files:
@@ -34,6 +34,8 @@ def combine_fastas(fasta_files, min_contig=0):
         for header, seq in contigs.items():
             if len(seq) >= min_contig:
                 combined[header] = seq
+            else:
+                print(f"removed {len(seq)} contig")
     return combined
 
 def print_sorted_contigs(contigs, line_width=100):
@@ -45,7 +47,7 @@ def print_sorted_contigs(contigs, line_width=100):
 def main():
     parser = argparse.ArgumentParser(description="Combine and sort contigs from multiple FASTA files.")
     parser.add_argument("fastas", nargs="+", help="Input FASTA files")
-    parser.add_argument("--min_contig", type=int, default=0, help="Minimum contig length to include (default: 0)")
+    parser.add_argument("--min_contig", type=int, default=1000, help="Minimum contig length to include (default: 0)")
 
     args = parser.parse_args()
     combined_contigs = combine_fastas(args.fastas, min_contig=args.min_contig)

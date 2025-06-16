@@ -51,25 +51,27 @@ process MAXBIN2 {
     tuple val(meta), path(depth_dir), path(assembly)
 
     output:
-    tuple val(meta), path("maxbin2_bins/"),  emit: bins
+    tuple val(meta), path("maxbin2/"),  emit: bins
 
     script:
     """
-    mkdir maxbin2_bins
+    mkdir maxbin2
 
     run_MaxBin.pl -contig ${assembly} \\
         -markerset ${params.maxbin_markers} \\
         -thread ${task.cpus} \\
         -min_contig_length ${params.min_contig} \\
-	    -out maxbin2_bins/${meta.ID} \\
+	    -out maxbin2/${meta.ID} \\
 	    -abund_list ${depth_dir}/mb2_abund_list.txt
 
     #move stuff out of the bin that isn't to use
-    mv maxbin2_bins/SAMEA104324823.marker .
-    mv maxbin2_bins/SAMEA104324823.noclass .
-    mv maxbin2_bins/SAMEA104324823.tooshort .
-    mv maxbin2_bins/SAMEA104324823.log .    
-    mv maxbin2_bins/SAMEA104324823.marker_of_each_bin.tar.gz .
-    mv maxbin2_bins/SAMEA104324823.summary .
+    mv maxbin2/${meta.ID}.marker .
+    mv maxbin2/${meta.ID}.noclass .
+    mv maxbin2/${meta.ID}.tooshort .
+    mv maxbin2/${meta.ID}.log .    
+    mv maxbin2/${meta.ID}.marker_of_each_bin.tar.gz .
+    mv maxbin2/${meta.ID}.summary .
+
+    #maxbin is already fasta
     """
 }

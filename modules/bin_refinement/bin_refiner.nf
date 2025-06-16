@@ -7,15 +7,19 @@ process BINNING_REFINER {
     container 'quay.io/sangerpathogens/bin_refiner:1.4.3'
 
     input:
-    tuple val(meta), path(bins)
+    tuple val(meta), val(bins_label), path(bins)
 
     output:
-    tuple val(meta), val("bins"), emit: refined_bins
+    tuple val(meta), val(bins_label), path("${meta.ID}_${bins_label}_Binning_refiner_outputs/${bins_label}"), emit: refined_bin_fastas
 
     script:
     """
     mkdir binning_input
     mv ${bins} binning_input
-    Binning_refiner -i binning_input -p ${meta.ID}
+
+    Binning_refiner -i binning_input -p ${meta.ID}_${bins_label}
+
+    # remove suffixfix from bin directory name
+    mv ${meta.ID}_${bins_label}_Binning_refiner_outputs/${meta.ID}_${bins_label}_refined_bins/ ${meta.ID}_${bins_label}_Binning_refiner_outputs/${bins_label}
     """
 }

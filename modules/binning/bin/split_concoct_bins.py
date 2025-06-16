@@ -2,7 +2,7 @@
 
 # Takes in the clustering_gt1000.csv file from CONCOCT binning, and splits the contigs into proper bins
 # Usage:
-# ./script clustering_gt1000.csv assembly_file.fa out_folder
+# ./split_bins.py clustering_gt1000.csv assembly_file.fasta out_folder
 
 import sys
 import os
@@ -26,9 +26,9 @@ with open(sys.argv[2]) as assembly_file:
             contig = line[1:-1].split(".")[0].split()[0]
             line = line.rsplit()[0] + "\n"
             if contig in bins:
-                current_bin = f"bin.{bins[contig]}.fa"
+                current_bin = f"bin.{bins[contig]}.fasta"
             else:
-                current_bin = "unbinned.fa"
+                current_bin = "unbinned.fasta"
             f = open(os.path.join(sys.argv[3], current_bin), 'a')
         f.write(line)
 

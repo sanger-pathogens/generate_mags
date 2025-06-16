@@ -53,21 +53,26 @@ process METABAT2 {
     tuple val(meta), path(depth_text), path(assembly)
 
     output:
-    tuple val(meta), path("metabat_bins/"),  emit: depth
+    tuple val(meta), path("metabat/"),  emit: depth
 
     script:
     """
     metabat2 -i ${assembly} \\
         -a ${depth_text} \\
-        -o metabat_bins/${meta.ID}_bin \\
+        -o metabat/${meta.ID}_bin \\
         -m ${params.min_contig} \\
         -t ${task.cpus} \\
         --unbinned
 
     #move stuff out of the bin that isn't to use
-    mv metabat_bins/${meta.ID}_bin.BinInfo.txt .
-    mv metabat_bins/${meta.ID}_bin.lowDepth.fa .
-    mv metabat_bins/${meta.ID}_bin.tooShort.fa .
-    mv metabat_bins/${meta.ID}_bin.unbinned.fa .
+    mv metabat/${meta.ID}_bin.BinInfo.txt .
+    mv metabat/${meta.ID}_bin.lowDepth.fa .
+    mv metabat/${meta.ID}_bin.tooShort.fa .
+    mv metabat/${meta.ID}_bin.unbinned.fa .
+
+    # rename remaining fasta rather than fa
+    for file in metabat/*.fa; do
+        mv "\$file" "\${file%.fa}.fasta"
+    done
     """
 }

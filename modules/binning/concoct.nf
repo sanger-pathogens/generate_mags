@@ -94,22 +94,22 @@ process SPLIT_BINS {
     label 'mem_1'
     label 'time_1'
 
-    container'quay.io/sangerpathogens/python-curl:3.11'
+    container 'quay.io/sangerpathogens/python-curl:3.11'
 
     input:
     tuple val(meta), path(merged_csv), path(contigs)
 
     output:
-    tuple val(meta), path("concoct_bins"), emit: bins
+    tuple val(meta), path("concoct"), emit: bins
 
     script:
     command = "${projectDir}/modules/binning/bin/split_concoct_bins.py"
     """
-    mkdir concoct_bins
+    mkdir concoct
 
-    ${command} ${merged_csv} ${contigs} concoct_bins
+    ${command} ${merged_csv} ${contigs} concoct
 
     # move stuff out of the bin that isn't to use
-    mv concoct_bins/unbinned.fa .
+    mv concoct/unbinned.fasta .
     """
 }

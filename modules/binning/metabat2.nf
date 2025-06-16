@@ -1,6 +1,6 @@
 process CONTIG_DEPTHS {
     label 'cpu_2'
-    label 'mem_1'
+    label 'mem_100M'
     label 'time_30m'
 
     container 'quay.io/biocontainers/metabat2:2.18--h6f16272_0'
@@ -20,7 +20,7 @@ process CONTIG_DEPTHS {
 
 process METABAT1 {
     label 'cpu_2'
-    label 'mem_10'
+    label 'mem_1'
     label 'time_30m'
 
     container 'quay.io/biocontainers/metabat2:2.18--h6f16272_0'
@@ -44,7 +44,7 @@ process METABAT1 {
 
 process METABAT2 {
     label 'cpu_2'
-    label 'mem_10'
+    label 'mem_1'
     label 'time_30m'
 
     container 'quay.io/biocontainers/metabat2:2.18--h6f16272_0'

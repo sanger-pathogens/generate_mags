@@ -78,7 +78,7 @@ class BinInfo:
                             if contig_name:
                                 self.bins_data[bin_file][contig_name] = contig_len
                                 contig_len = 0
-                            contig_name = line[1:]
+                            contig_name = line[1:].split('\t', 1)[0] #remove depth info
                         else:
                             contig_len += len(line)
                     

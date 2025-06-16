@@ -21,7 +21,7 @@ process SORT_BAM {
 
 process INDEX {
     label 'cpu_1'
-    label 'mem_1'
+    label 'mem_100M'
     label 'time_30m'
 
     container 'quay.io/biocontainers/samtools:1.22--h96c455f_0'

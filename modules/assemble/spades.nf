@@ -1,7 +1,7 @@
 process METASPADES {
     tag "${meta.ID}"
     label 'cpu_8'
-    label 'mem_64'
+    label 'mem_32'
     label 'time_12'
 
     container 'quay.io/biocontainers/spades:3.12.0--1'

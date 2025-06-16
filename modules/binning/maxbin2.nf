@@ -1,6 +1,6 @@
 process CONTIG_DEPTHS_NO_INTRA {
-    label 'cpu_2'
-    label 'mem_1'
+    label 'cpu_1'
+    label 'mem_100M'
     label 'time_30m'
 
     container 'quay.io/biocontainers/metabat2:2.18--h6f16272_0'
@@ -21,7 +21,7 @@ process CONTIG_DEPTHS_NO_INTRA {
 process SPLIT_DEPTHS {
     tag "${meta.ID}"
     label 'cpu_1'
-    label 'mem_1'
+    label 'mem_100M'
     label 'time_30m'
 
     container 'quay.io/sangerpathogens/python-curl:3.11'
@@ -42,7 +42,7 @@ process SPLIT_DEPTHS {
 
 process MAXBIN2 {
     label 'cpu_2'
-    label 'mem_10'
+    label 'mem_1'
     label 'time_30m'
 
     container 'quay.io/biocontainers/maxbin2:2.2.7--h503566f_7'

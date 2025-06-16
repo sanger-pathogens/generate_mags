@@ -1,7 +1,7 @@
 process MEGAHIT {
     tag "${meta.ID}"
     label 'cpu_8'
-    label 'mem_32'
+    label 'mem_8'
     label 'time_12'
 
     container 'quay.io/biocontainers/megahit:1.2.9--h5ca1c30_6'

@@ -27,8 +27,8 @@ process CHECKM {
 process SUMMARISE_CHECKM {
     tag "${meta.ID}"
     label 'cpu_1'
-    label 'mem_1'
-    label 'time_1'
+    label 'mem_250M'
+    label 'time_30m'
 
     publishDir mode: 'copy', path: "${params.outdir}/${meta.ID}/checkm1/", pattern: "${meta.ID}_${bin_name}checkm_summary.tsv"
 

@@ -1,9 +1,11 @@
 include { BINNING_REFINER               } from '../modules/bin_refinement/bin_refiner.nf'
 include { CHECKM2;
-          CHECKM2 as CHECKM2_MERGED_BIN } from '../modules/bin_refinement/checkm2.nf'
+          CHECKM2 as CHECKM2_MERGED_BIN;
+          CHECKM2 as CHECKM2_FINAL_BIN  } from '../modules/bin_refinement/checkm2.nf'
 include { CHECKM;
           SUMMARISE_CHECKM              } from '../modules/bin_refinement/checkm1.nf'
 include { MERGE_BINS                    } from '../modules/bin_refinement/merge_bins.nf'
+include { DEREPLICATE_CONTIGS           } from '../modules/bin_refinement/dereplicate_contigs.nf'
 
 /*
 
@@ -99,6 +101,8 @@ workflow METAWRAP_BIN_REFINEMENT {
     | MERGE_BINS
 
     CHECKM2_MERGED_BIN(MERGE_BINS.out.merged_bins)
+    | DEREPLICATE_CONTIGS
+    | CHECKM2_FINAL_BIN
 
     //todo add derep methods
 

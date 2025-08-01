@@ -212,7 +212,7 @@ Alternatively, the user can provide a CSV-format manifest listing a batch of suc
  Binning and Assembly Options
       --keep_allbins
             default: false
-            Keep allbins option for bin refinement. (optional)
+            Don't cleanup bin refinement files. (optional)
 
       --keep_assembly
             default: false

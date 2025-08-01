@@ -4,6 +4,8 @@
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
 
+[[_TOC_]]
+
 ## Introduction
 
 **generate_mags** is a nextflow pipeline that (unsurpisingly) generates MAGs (Metagenome-Assembled Genomes). It is based on `metawrap assembly` (https://github.com/bxlab/metaWRAP).
@@ -11,26 +13,6 @@
 ## Pipeline summary
 
 There are 5 stages in this pipeline: QC, assembly, binning, bin refinement, and bin reassembly.
-
-A list of pipeline processes whose configuration (including resource requirements) can be customised if needed (see here):
-
-```
-ASSEMBLY
-BINNING
-BIN_REFINEMENT
-REASSEMBLE_BINS
-CLEANUP_ASSEMBLY
-CLEANUP_BINNING
-CLEANUP_BIN_REFINEMENT
-CLEANUP_REFINEMENT_REASSEMBLY
-CLEANUP_TRIMMED_FASTQ_FILES
-TRIMGALORE
-BMTAGGER
-FILTER_HOST_READS
-GET_HOST_READS
-GENERATE_STATS
-COLLATE_STATS
-```
 
 ## Getting started
 
@@ -311,6 +293,29 @@ Output folders are described in the following table:
 | <sample_id>\_bin_refinement_outdir | Contains all bin .fa, .stats and .contig files from the bin refinement step (if `--keep_allbins` option is used) |
 | <sample_id>\_saved_raw_bins | Contains files generated during the binning step (if `--keep_binning` option is used) |
 | <sample_id>\_reassemble_bins_outdir | Contains all bin assemblies (fasta) and stats files from the bin reassembly step (if `--keep_reassembly` option is used) |
+
+## Further configuration
+
+The easiest way to add or override pipeline-specific configuration is to create a custom nextflow config file and supply this to the pipeline using the `-c`  or `-config`  option. It is a good idea to take configuration from the pipeline repository as a starting point, then you can delete bits that you want to keep unchanged. For information on nextflow configuration and customisation, see https://www.nextflow.io/docs/latest/config.html.
+
+A list of pipeline processes whose configuration (including resource requirements) can be customised with a nextflow configuration file if needed:
+```
+ASSEMBLY
+BINNING
+BIN_REFINEMENT
+REASSEMBLE_BINS
+CLEANUP_ASSEMBLY
+CLEANUP_BINNING
+CLEANUP_BIN_REFINEMENT
+CLEANUP_REFINEMENT_REASSEMBLY
+CLEANUP_TRIMMED_FASTQ_FILES
+TRIMGALORE
+BMTAGGER
+FILTER_HOST_READS
+GET_HOST_READS
+GENERATE_STATS
+COLLATE_STATS
+```
 
 ## Credits
 

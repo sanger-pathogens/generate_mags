@@ -319,7 +319,7 @@ COLLATE_STATS
 
 ## Credits
 
-This pipeline waas originally designed as a reimplementation of metaWRAP (based on version 1.3.2; https://github.com/bxlab/metaWRAP). For further information please refer to the MetaWRAP paper: [MetaWRAP - a flexible pipeline for genome-resolved metagenomic data analysis](https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-018-0541-1)
+The pipeline uses a customised version of metaWRAP v1.3.2 (https://github.com/bxlab/metaWRAP) which is able to take in fastq.gz files. For further information see the MetaWRAP paper: [MetaWRAP - a flexible pipeline for genome-resolved metagenomic data analysis](https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-018-0541-1)
 
 ## Support
 

@@ -29,7 +29,7 @@ There are 5 stages in this pipeline: QC, assembly, binning, bin refinement, and 
    - Clone this repository using `git clone --recurse-submodules`  
      OR
    - Use ready-made module: `module load generate_mags`  
-     :warning: If using the read-made module, replace `nextflow run main.nf` with `generate_mags` in all subsequent commands.
+     :warning: If using the ready-made module, replace `nextflow run main.nf` with `generate_mags` in all subsequent commands.
 
 3. Start the pipeline  
    For example input, please see [Generating a manifest](#generating-a-manifest).

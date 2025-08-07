@@ -296,9 +296,10 @@ Output folders are described in the following table:
 
 ## Further configuration
 
-The easiest way to add or override pipeline-specific configuration is to create a custom nextflow config file and supply this to the pipeline using the `-c`  or `-config`  option. It is a good idea to take configuration from the pipeline repository as a starting point, then you can delete bits that you want to keep unchanged. For information on nextflow configuration and customisation, see https://www.nextflow.io/docs/latest/config.html.
+The easiest way to add or override pipeline-specific configuration is to create a custom nextflow config file and supply this to the pipeline using the `-c` or `-config` option. It is a good idea to take configuration from the pipeline repository as a starting point, then you can delete bits that you want to keep unchanged. For information on nextflow configuration and customisation, see https://www.nextflow.io/docs/latest/config.html.
 
 A list of pipeline processes whose configuration (including resource requirements) can be customised with a nextflow configuration file if needed:
+
 ```
 ASSEMBLY
 BINNING
